@@ -1,0 +1,73 @@
+@extends('admin.layout')
+
+@section('content')
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h1 class="animate-fade-in">
+                        <i class="fas fa-user-edit mr-2"></i>Edit Data Siswa
+                    </h1>
+                    <p class="mb-0 text-white-50">Memperbarui informasi untuk siswa: <strong>{{ $user->nama }}</strong></p>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right animate-fade-in">
+                        <li class="breadcrumb-item"><a href="{{ route('dashboardadmin') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('dataSiswa') }}">Data Siswa</a></li>
+                        <li class="breadcrumb-item active">Edit Siswa</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card animate-slide-up">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-edit mr-2"></i> Formulir Perubahan Data
+                            </h3>
+                        </div>
+                        <form action="{{ route('updateuser', $user->id) }}" method="POST">
+                            @csrf
+                            @method('PUT') {{-- Penting untuk proses update --}}
+
+                            <div class="card-body p-4">
+                                <div class="form-group">
+                                    <label for="nama" class="font-weight-bold">Nama Lengkap</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" id="nama" name="nama" value="{{ old('nama', $user->nama) }}" placeholder="Masukkan Nama Lengkap Siswa" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="nisn" class="font-weight-bold">NISN</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        </div>
+                                        <input type="number" class="form-control" id="nisn" name="nisn" value="{{ old('nisn', $user->nisn) }}" placeholder="Masukkan Nomor Induk Siswa Nasional" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer text-right">
+                                <a href="{{ route('dataSiswa') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times mr-1"></i> Batal
+                                </a>
+                                <button type="submit" class="btn btn-primary ml-2">
+                                    <i class="fas fa-save mr-1"></i> Simpan Perubahan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+    @endsection
