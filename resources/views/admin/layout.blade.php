@@ -277,7 +277,7 @@
                 <li class="nav-item">
                     <a href="{{route('materi')}}" class="nav-link {{ Request::routeIs('materi') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-open"></i><p>Kelola Materi</p>
-                    </a>
+                    </a>z
                 </li>
                 <li class="nav-item">
                     <a href="{{route('kuis')}}" class="nav-link {{ Request::routeIs('kuis') ? 'active' : '' }}">
@@ -295,13 +295,13 @@
                         <i class="nav-icon fas fa-trophy"></i><p>Peringkat Siswa</p>
                     </a>
                 </li>
-                <li class="nav-header">AKUN</li>
+                {{-- <li class="nav-header">AKUN</li> --}}
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="#" class="nav-link" onclick="event.preventDefault(); confirmLogout();">
                         <i class="nav-icon fas fa-sign-out-alt text-danger"></i><p>Log-out</p>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </nav>
         </div>

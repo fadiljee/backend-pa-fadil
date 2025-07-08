@@ -295,13 +295,9 @@
                         <i class="nav-icon fas fa-trophy"></i><p>Peringkat Siswa</p>
                     </a>
                 </li>
-                <li class="nav-header">AKUN</li>
+                
 
-                <li class="nav-item">
-                    <a href="#" class="nav-link" onclick="event.preventDefault(); confirmLogout();">
-                        <i class="nav-icon fas fa-sign-out-alt text-danger"></i><p>Log-out</p>
-                    </a>
-                </li>
+                
             </ul>
         </nav>
         </div>
