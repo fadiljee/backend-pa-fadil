@@ -277,7 +277,7 @@
                 <li class="nav-item">
                     <a href="{{route('materi')}}" class="nav-link {{ Request::routeIs('materi') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-book-open"></i><p>Kelola Materi</p>
-                    </a>z
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{route('kuis')}}" class="nav-link {{ Request::routeIs('kuis') ? 'active' : '' }}">
