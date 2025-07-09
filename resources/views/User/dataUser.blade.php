@@ -77,41 +77,44 @@
                     <div class="table-responsive table-container">
                         <table id="studentsTable" class="table table-hover w-100">
                             <thead>
-                                <tr>
-                                    <th class="text-center" style="width: 5%;">No</th>
-                                    <th style="width: 45%;">Nama Lengkap</th>
-                                    <th style="width: 25%;">NISN</th>
-                                    <th class="text-center" style="width: 25%;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($users as $index => $user)
-                                <tr>
-                                    <td class="text-center">{{ $index + 1 }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px; font-weight: 600;">
-                                                {{ strtoupper(substr($user->nama, 0, 1)) }}
-                                            </div>
-                                            <span class="font-weight-bold">{{ $user->nama }}</span>
-                                        </div>
-                                    </td>
-                                    <td><code class="text-dark">{{ $user->nisn }}</code></td>
-                                    <td class="text-center">
-                                        <a href="{{ route('useredit', $user->id) }}" class="btn btn-sm btn-warning btn-action" title="Edit">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger btn-action" title="Hapus" onclick="confirmDelete('{{ $user->id }}', '{{ $user->nama }}')">
-                                            <i class="fas fa-trash-alt"></i> Hapus
-                                        </button>
-                                        <form id="delete-form-{{ $user->id }}" action="{{ route('userdelete', $user->id) }}" method="POST" style="display: none;">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
+    <tr>
+        <th class="text-center" style="width: 5%;">No</th>
+        <th style="width: 35%;">Nama Lengkap</th>
+        <th style="width: 20%;">NISN</th>
+        <th style="width: 20%;">Kelas</th> <!-- kolom baru -->
+        <th class="text-center" style="width: 20%;">Aksi</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach ($users as $index => $user)
+    <tr>
+        <td class="text-center">{{ $index + 1 }}</td>
+        <td>
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px; font-weight: 600;">
+                    {{ strtoupper(substr($user->nama, 0, 1)) }}
+                </div>
+                <span class="font-weight-bold">{{ $user->nama }}</span>
+            </div>
+        </td>
+        <td><code class="text-dark">{{ $user->nisn }}</code></td>
+        <td>{{ $user->kelas }}</td> <!-- tampilkan kelas -->
+        <td class="text-center">
+            <a href="{{ route('useredit', $user->id) }}" class="btn btn-sm btn-warning btn-action" title="Edit">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <button type="button" class="btn btn-sm btn-danger btn-action" title="Hapus" onclick="confirmDelete('{{ $user->id }}', '{{ $user->nama }}')">
+                <i class="fas fa-trash-alt"></i> Hapus
+            </button>
+            <form id="delete-form-{{ $user->id }}" action="{{ route('userdelete', $user->id) }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
+            </form>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+
                         </table>
                     </div>
                 </div>

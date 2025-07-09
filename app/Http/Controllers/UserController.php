@@ -117,12 +117,14 @@ class UserController extends Controller
         $request->validate([
             'nama' => 'required|min:5|string|max:255',
             'nisn' => 'required|digits:10',
+            'kelas' => 'required|string|max:10',
 
         ]);
 
         $dataInsert = [
             'nama' => $request->nama,
             'nisn' => $request->nisn,
+            'kelas' => $request->kelas,
         ];
 
         Siswa::insert($dataInsert);
@@ -143,10 +145,12 @@ class UserController extends Controller
     {
         $nama = $request->input('nama');
         $nisn = $request->input('nisn');
+        $kelas = $request->input('kelas');
 
         $dataUpdate = [
             'nama' => $nama,
             'nisn' => $nisn,
+            'kelas' => $kelas,
         ];
 
         Siswa::where('id', $id)->update($dataUpdate);

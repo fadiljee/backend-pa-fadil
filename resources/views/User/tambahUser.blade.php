@@ -67,6 +67,16 @@
                                     </div>
                                     <small class="form-text text-muted">Pastikan NISN unik dan belum terdaftar.</small>
                                 </div>
+                                <div class="form-group">
+    <label for="kelas" class="font-weight-bold">Kelas</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-chalkboard"></i></span>
+        </div>
+        <input type="text" class="form-control" id="kelas" name="kelas" value="{{ old('kelas') }}" placeholder="Masukkan Kelas Siswa" required>
+    </div>
+</div>
+
 
                             </div>
                             <div class="card-footer text-right">

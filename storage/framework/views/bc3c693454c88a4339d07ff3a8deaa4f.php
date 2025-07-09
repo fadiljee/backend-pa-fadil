@@ -76,42 +76,45 @@
                     <div class="table-responsive table-container">
                         <table id="studentsTable" class="table table-hover w-100">
                             <thead>
-                                <tr>
-                                    <th class="text-center" style="width: 5%;">No</th>
-                                    <th style="width: 45%;">Nama Lengkap</th>
-                                    <th style="width: 25%;">NISN</th>
-                                    <th class="text-center" style="width: 25%;">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <tr>
-                                    <td class="text-center"><?php echo e($index + 1); ?></td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px; font-weight: 600;">
-                                                <?php echo e(strtoupper(substr($user->nama, 0, 1))); ?>
+    <tr>
+        <th class="text-center" style="width: 5%;">No</th>
+        <th style="width: 35%;">Nama Lengkap</th>
+        <th style="width: 20%;">NISN</th>
+        <th style="width: 20%;">Kelas</th> <!-- kolom baru -->
+        <th class="text-center" style="width: 20%;">Aksi</th>
+    </tr>
+</thead>
+<tbody>
+    <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <tr>
+        <td class="text-center"><?php echo e($index + 1); ?></td>
+        <td>
+            <div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 40px; height: 40px; font-weight: 600;">
+                    <?php echo e(strtoupper(substr($user->nama, 0, 1))); ?>
 
-                                            </div>
-                                            <span class="font-weight-bold"><?php echo e($user->nama); ?></span>
-                                        </div>
-                                    </td>
-                                    <td><code class="text-dark"><?php echo e($user->nisn); ?></code></td>
-                                    <td class="text-center">
-                                        <a href="<?php echo e(route('useredit', $user->id)); ?>" class="btn btn-sm btn-warning btn-action" title="Edit">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger btn-action" title="Hapus" onclick="confirmDelete('<?php echo e($user->id); ?>', '<?php echo e($user->nama); ?>')">
-                                            <i class="fas fa-trash-alt"></i> Hapus
-                                        </button>
-                                        <form id="delete-form-<?php echo e($user->id); ?>" action="<?php echo e(route('userdelete', $user->id)); ?>" method="POST" style="display: none;">
-                                            <?php echo csrf_field(); ?>
-                                            <?php echo method_field('DELETE'); ?>
-                                        </form>
-                                    </td>
-                                </tr>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </tbody>
+                </div>
+                <span class="font-weight-bold"><?php echo e($user->nama); ?></span>
+            </div>
+        </td>
+        <td><code class="text-dark"><?php echo e($user->nisn); ?></code></td>
+        <td><?php echo e($user->kelas); ?></td> <!-- tampilkan kelas -->
+        <td class="text-center">
+            <a href="<?php echo e(route('useredit', $user->id)); ?>" class="btn btn-sm btn-warning btn-action" title="Edit">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <button type="button" class="btn btn-sm btn-danger btn-action" title="Hapus" onclick="confirmDelete('<?php echo e($user->id); ?>', '<?php echo e($user->nama); ?>')">
+                <i class="fas fa-trash-alt"></i> Hapus
+            </button>
+            <form id="delete-form-<?php echo e($user->id); ?>" action="<?php echo e(route('userdelete', $user->id)); ?>" method="POST" style="display: none;">
+                <?php echo csrf_field(); ?>
+                <?php echo method_field('DELETE'); ?>
+            </form>
+        </td>
+    </tr>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+</tbody>
+
                         </table>
                     </div>
                 </div>

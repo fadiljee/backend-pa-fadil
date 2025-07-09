@@ -33,7 +33,7 @@
                         </div>
                         <form action="{{ route('updateuser', $user->id) }}" method="POST">
                             @csrf
-                            @method('PUT') {{-- Penting untuk proses update --}}
+                            @method('POST') {{-- Penting untuk proses update --}}
 
                             <div class="card-body p-4">
                                 <div class="form-group">
@@ -55,6 +55,16 @@
                                         <input type="number" class="form-control" id="nisn" name="nisn" value="{{ old('nisn', $user->nisn) }}" placeholder="Masukkan Nomor Induk Siswa Nasional" required>
                                     </div>
                                 </div>
+                                <div class="form-group">
+    <label for="kelas" class="font-weight-bold">Kelas</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-chalkboard"></i></span>
+        </div>
+        <input type="text" class="form-control" id="kelas" name="kelas" value="{{ old('kelas', $user->kelas) }}" placeholder="Masukkan Kelas Siswa" required>
+    </div>
+</div>
+
                             </div>
                             <div class="card-footer text-right">
                                 <a href="{{ route('dataSiswa') }}" class="btn btn-secondary">

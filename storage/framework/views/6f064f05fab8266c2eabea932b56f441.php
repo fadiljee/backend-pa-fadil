@@ -31,7 +31,7 @@
                         </div>
                         <form action="<?php echo e(route('updateuser', $user->id)); ?>" method="POST">
                             <?php echo csrf_field(); ?>
-                            <?php echo method_field('PUT'); ?> 
+                            <?php echo method_field('POST'); ?> 
 
                             <div class="card-body p-4">
                                 <div class="form-group">
@@ -53,6 +53,16 @@
                                         <input type="number" class="form-control" id="nisn" name="nisn" value="<?php echo e(old('nisn', $user->nisn)); ?>" placeholder="Masukkan Nomor Induk Siswa Nasional" required>
                                     </div>
                                 </div>
+                                <div class="form-group">
+    <label for="kelas" class="font-weight-bold">Kelas</label>
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-chalkboard"></i></span>
+        </div>
+        <input type="text" class="form-control" id="kelas" name="kelas" value="<?php echo e(old('kelas', $user->kelas)); ?>" placeholder="Masukkan Kelas Siswa" required>
+    </div>
+</div>
+
                             </div>
                             <div class="card-footer text-right">
                                 <a href="<?php echo e(route('dataSiswa')); ?>" class="btn btn-secondary">

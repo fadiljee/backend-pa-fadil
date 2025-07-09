@@ -12,7 +12,7 @@ use HasApiTokens;
    protected $table = 'data_siswa';
 
     // Menentukan kolom yang bisa diisi (fillable)
-    protected $fillable = ['nisn', 'nama'];
+    protected $fillable = ['nisn', 'nama', 'kelas'];
 
     // Relasi ke HasilKuis
     public function hasilKuis()
