@@ -14,8 +14,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/kuis', [AuthController::class, 'kuis']);
     Route::get('/kuis/{id}', [AuthController::class, 'kuisShow']);
     Route::post('/hasil-kuis', [AuthController::class, 'storeHasilKuis']);
+     Route::get('/user/profile', [AuthController::class, 'userProfile']);
 
     // PENAMBAHAN: Rute ini yang terlewat.
     // Ini menghubungkan URL /api/user/stats ke fungsi getUserStats di AuthController.
     Route::get('/user/stats', [AuthController::class, 'getUserStats']);
+    Route::post('/unlock-next-materi', [AuthController::class, 'unlockNextMateri']);
+     Route::get('/materi-unlock', [AuthController::class, 'getUnlockedMateri']); // <== Tambahkan ini
 });

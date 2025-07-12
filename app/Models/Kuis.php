@@ -19,6 +19,7 @@ class Kuis extends Model
         'jawaban_c',
         'jawaban_d',
         'jawaban_benar',
+        'pembahasan',
         'nilai',
         'materi_id',
     ];

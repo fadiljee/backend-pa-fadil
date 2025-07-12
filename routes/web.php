@@ -45,9 +45,13 @@ Route::middleware(LoggedIn::class)->group(function () {
     Route::get('/editKuis/{id}', [quizController::class, 'edit'])->name('kuisedit');
     Route::post('/updateKuis/{id}', [quizController::class, 'update'])->name('updatekuis');
     Route::delete('/kuisdelete/{id}', [quizController::class, 'destroy'])->name('kuisdelete');
+    // Route::get('/hasil-kuis/{siswa}/riwayat', [quizController::class, 'riwayat'])->name('hasil-kuis.riwayat');
+
 
     // Hasil Kuis
-    Route::get('/hasil-kuis', [quizController::class, 'hasil'])->name('hasil-kuis');
+
+    Route::get('/hasil-kuis', [quizController::class, 'hasilindex'])->name('hasil-kuis');
+    Route::get('/hasil-kuis/{siswa}/riwayat', [quizController::class, 'riwayat'])->name('hasil-kuis.riwayat');
     Route::post('/hasil-kuis', [quizController::class, 'storeHasilKuis'])->name('hasil-kuis.store');
 
     // leaderboard

@@ -7,40 +7,60 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\UserModel1;
 use App\Models\Materi;
 use App\Models\Kuis;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Siswa;
+use App\Models\MateriSiswaUnlock;
 use App\Models\HasilKuis;
 use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
     // Login menggunakan NISN dan buat token Sanctum
-    public function login(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nisn' => 'required|digits:10',
-        ]);
+   public function login(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'nisn' => 'required|digits:10',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $siswa = UserModel1::where('nisn', $request->nisn)->first();
-
-        if (!$siswa) {
-            return response()->json(['message' => 'NISN tidak ditemukan'], 404);
-        }
-
-        // Hapus token lama (opsional)
-        $siswa->tokens()->delete();
-
-        // Buat token baru
-        $token = $siswa->createToken('token-siswa')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login berhasil',
-            'data_siswa' => $siswa,
-            'token' => $token,
-        ]);
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
     }
+
+    $siswa = Siswa::where('nisn', $request->nisn)->first();
+
+    if (!$siswa) {
+        return response()->json(['message' => 'NISN tidak ditemukan'], 404);
+    }
+
+    // Hapus token lama (opsional)
+    $siswa->tokens()->delete();
+
+    // Buat token baru
+    $token = $siswa->createToken('token-siswa')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login berhasil',
+        'data_siswa' => [
+            'id' => $siswa->id,
+            'nisn' => $siswa->nisn,
+            'nama' => $siswa->nama,
+            'kelas' => $siswa->kelas,   // <-- tambah kelas di sini
+        ],
+        'token' => $token,
+    ]);
+}
+
+public function userProfile(Request $request)
+{
+    $user = $request->user();
+
+    return response()->json([
+        'id' => $user->id,
+        'nisn' => $user->nisn,
+        'nama' => $user->nama,
+        'kelas' => $user->kelas,
+    ]);
+}
 
     // Tampilkan semua materi
     public function index()
@@ -92,20 +112,37 @@ class AuthController extends Controller
 
     // Tampilkan semua kuis dengan relasi materi
     public function kuis()
-    {
-        $kuis = Kuis::with('materi')->get();
+{
+    $kuis = Kuis::with('materi')->get()->map(function ($item) {
+        return [
+            'id' => $item->id,
+            'pertanyaan' => $item->pertanyaan,
+            'jawaban_a' => $item->jawaban_a,
+            'jawaban_b' => $item->jawaban_b,
+            'jawaban_c' => $item->jawaban_c,
+            'jawaban_d' => $item->jawaban_d,
+            'jawaban_benar' => $item->jawaban_benar,
+            'nilai' => $item->nilai,
+            'materi_id' => $item->materi_id,
+            'pembahasan' => $item->pembahasan,  // tambah ini
+            'materi' => $item->materi,
+        ];
+    });
 
-        return response()->json(['kuis' => $kuis]);
-    }
+    return response()->json(['kuis' => $kuis]);
+}
+
 
     // Tampilkan kuis berdasarkan materi_id
    public function kuisShow($id)
 {
-    $kuis = Kuis::select('id', 'pertanyaan', 'jawaban_a', 'jawaban_b', 'jawaban_c', 'jawaban_d', 'jawaban_benar', 'nilai', 'materi_id')
-    ->with('materi')
-    ->where('materi_id', $id)
-    ->get();
-
+    $kuis = Kuis::select(
+                'id', 'pertanyaan', 'jawaban_a', 'jawaban_b', 'jawaban_c', 'jawaban_d',
+                'jawaban_benar', 'nilai', 'materi_id', 'pembahasan'  // tambahkan field pembahasan
+            )
+            ->with('materi')
+            ->where('materi_id', $id)
+            ->get();
 
     if ($kuis->isEmpty()) {
         return response()->json(['message' => 'Kuis tidak ditemukan'], 404);
@@ -113,6 +150,7 @@ class AuthController extends Controller
 
     return response()->json(['kuis' => $kuis]);
 }
+
 
 
     // Simpan hasil kuis dengan validasi dan transaksi
@@ -209,5 +247,69 @@ private function getGelar($skor)
             'gelar' => $gelar,
         ]);
     }
+
+  public function unlockNextMateri(Request $request)
+{
+    $user = $request->user();
+    $materiId = $request->input('materi_id');
+
+    if (!$materiId) {
+        return response()->json(['message' => 'materi_id diperlukan'], 422);
+    }
+
+    // Hitung total skor siswa untuk materi ini
+    $totalSkorMateri = HasilKuis::join('kuis', 'hasil_kuis.kuis_id', '=', 'kuis.id')
+                        ->where('hasil_kuis.siswa_id', $user->id)
+                        ->where('kuis.materi_id', $materiId)
+                        ->sum('hasil_kuis.skor');
+
+    if ($totalSkorMateri >= 70) {
+        $nextMateriId = $materiId + 1;
+        $nextMateri = Materi::find($nextMateriId);
+
+        if ($nextMateri) {
+            // Cek apakah sudah unlock sebelumnya
+            $alreadyUnlocked = MateriSiswaUnlock::where('siswa_id', $user->id)
+                                ->where('materi_id', $nextMateriId)
+                                ->exists();
+
+            if (!$alreadyUnlocked) {
+                MateriSiswaUnlock::create([
+                    'siswa_id' => $user->id,
+                    'materi_id' => $nextMateriId,
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Materi berikutnya telah dibuka',
+                'next_materi_id' => $nextMateriId,
+            ]);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Nilai belum mencapai batas unlock materi berikutnya',
+        'total_skor_materi' => $totalSkorMateri,
+    ]);
+}
+
+public function getUnlockedMateri(Request $request)
+{
+    $user = $request->user();
+
+    $unlockedMateriIds = MateriSiswaUnlock::where('siswa_id', $user->id)
+                            ->pluck('materi_id')
+                            ->toArray();
+
+    // Pastikan materi 1 selalu unlock
+    if (!in_array(1, $unlockedMateriIds)) {
+        array_unshift($unlockedMateriIds, 1);
+    }
+
+    return response()->json([
+        'unlocked_materi_ids' => $unlockedMateriIds,
+    ]);
+}
+
 
 }

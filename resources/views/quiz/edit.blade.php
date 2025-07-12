@@ -47,7 +47,7 @@
 
                         <form action="{{ route('updatekuis', $kuis->id) }}" method="POST">
                             @csrf
-                            @method('PUT') {{-- Penting untuk proses update --}}
+                            @method('POST') {{-- Penting untuk proses update --}}
 
                             <div class="card-body p-4">
                                 <div class="form-group">
@@ -100,6 +100,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pembahasan" class="font-weight-bold">Pembahasan</label>
+                                    <textarea class="form-control" name="pembahasan" id="pembahasan" rows="4" placeholder="Masukkan pembahasan soal...">{{ old('pembahasan', $kuis->pembahasan) }}</textarea>
                                 </div>
 
                                 <hr>

@@ -98,6 +98,10 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label for="pembahasan" class="font-weight-bold">Pembahasan</label>
+                                    <textarea class="form-control" name="pembahasan" id="pembahasan" rows="4" placeholder="Masukkan pembahasan soal...">{{ old('pembahasan') }}</textarea>
+                                </div>
 
                                 <hr>
                                 <h5 class="font-weight-bold mb-3">Konfigurasi Soal</h5>

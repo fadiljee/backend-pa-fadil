@@ -20,6 +20,38 @@ class quizController extends Controller
         return view('quiz.index', compact('kuis'));
     }
 
+    public function hasilindex(Request $request)
+{
+    $query = Siswa::whereHas('hasilKuis');
+
+    if ($request->filled('search')) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
+    }
+
+    if ($request->filled('kelas')) {
+        $query->where('kelas', $request->kelas);
+    }
+
+    // Ambil list kelas unik untuk filter dropdown
+    $kelasList = Siswa::select('kelas')->distinct()->pluck('kelas');
+
+    $siswa = $query->orderBy('nama')->paginate(10);
+
+    return view('hasilkuis.index', compact('siswa', 'kelasList'));
+}
+
+public function riwayat($siswaId)
+{
+    $siswa = Siswa::findOrFail($siswaId);
+
+    $hasilKuis = HasilKuis::with(['kuis.materi'])
+                ->where('siswa_id', $siswaId)
+                ->orderBy('waktu_dikerjakan', 'desc')
+                ->paginate(15);
+
+    return view('hasilkuis.riwayat', compact('hasilKuis', 'siswa'));
+}
+
     // Menampilkan form tambah kuis
     public function create()
     {
@@ -37,6 +69,7 @@ class quizController extends Controller
             'jawaban_c' => 'required|string|max:255',
             'jawaban_d' => 'required|string|max:255',
             'jawaban_benar' => 'required|in:A,B,C,D',
+            'pembahasan' => 'nullable|string',
             'materi_id' => 'required|exists:materis,id',
         ]);
 
@@ -64,6 +97,7 @@ class quizController extends Controller
             'jawaban_c' => 'required|string|max:255',
             'jawaban_d' => 'required|string|max:255',
             'jawaban_benar' => 'required|in:A,B,C,D',
+            'pembahasan' => 'nullable|string',
             'materi_id' => 'required|exists:materis,id',
         ]);
 

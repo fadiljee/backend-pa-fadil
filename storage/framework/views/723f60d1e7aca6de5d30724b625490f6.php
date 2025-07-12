@@ -45,7 +45,7 @@
 
                         <form action="<?php echo e(route('updatekuis', $kuis->id)); ?>" method="POST">
                             <?php echo csrf_field(); ?>
-                            <?php echo method_field('PUT'); ?> 
+                            <?php echo method_field('POST'); ?> 
 
                             <div class="card-body p-4">
                                 <div class="form-group">
@@ -98,6 +98,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pembahasan" class="font-weight-bold">Pembahasan</label>
+                                    <textarea class="form-control" name="pembahasan" id="pembahasan" rows="4" placeholder="Masukkan pembahasan soal..."><?php echo e(old('pembahasan', $kuis->pembahasan)); ?></textarea>
                                 </div>
 
                                 <hr>
