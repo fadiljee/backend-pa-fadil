@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface PaginationProps {
   currentPage: number;
@@ -28,34 +29,34 @@ export function Pagination({
       </div>
       <div className="flex items-center gap-2">
         {currentPage > 1 ? (
-          <Link
-            href={buildHref(currentPage - 1)}
-            className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Sebelumnya
-          </Link>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={
+              <Link href={buildHref(currentPage - 1)} className="min-h-11 px-4">
+                Sebelumnya
+              </Link>
+            }
+          />
         ) : (
-          <span
-            aria-disabled="true"
-            className="inline-flex min-h-11 items-center rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 font-medium text-slate-600"
-          >
+          <Button variant="outline" disabled className="min-h-11 px-4">
             Sebelumnya
-          </span>
+          </Button>
         )}
         {currentPage < totalPages ? (
-          <Link
-            href={buildHref(currentPage + 1)}
-            className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
-          >
-            Berikutnya
-          </Link>
+          <Button
+            variant="outline"
+            nativeButton={false}
+            render={
+              <Link href={buildHref(currentPage + 1)} className="min-h-11 px-4">
+                Berikutnya
+              </Link>
+            }
+          />
         ) : (
-          <span
-            aria-disabled="true"
-            className="inline-flex min-h-11 items-center rounded-lg border border-slate-200 bg-slate-100 px-4 py-2 font-medium text-slate-600"
-          >
+          <Button variant="outline" disabled className="min-h-11 px-4">
             Berikutnya
-          </span>
+          </Button>
         )}
       </div>
     </div>

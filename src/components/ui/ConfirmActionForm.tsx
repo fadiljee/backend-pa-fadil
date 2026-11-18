@@ -1,6 +1,17 @@
 "use client";
 
-import { useId, useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ConfirmActionFormProps {
   action: () => Promise<void>;
@@ -15,11 +26,6 @@ interface ConfirmActionFormProps {
   children: React.ReactNode;
 }
 
-const confirmButtonStyles: Record<NonNullable<ConfirmActionFormProps["variant"]>, string> = {
-  danger: "bg-red-700 hover:bg-red-800 text-white",
-  primary: "bg-indigo-800 hover:bg-indigo-900 text-white",
-};
-
 export function ConfirmActionForm({
   action,
   title,
@@ -32,25 +38,12 @@ export function ConfirmActionForm({
   triggerTitle,
   children,
 }: ConfirmActionFormProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const titleId = useId();
-  const descId = useId();
-
-  function handleOpen() {
-    dialogRef.current?.showModal();
-  }
-
-  function handleClose() {
-    const dialog = dialogRef.current;
-    if (dialog) {
-      dialog.returnValue = "";
-    }
-  }
 
   function handleConfirm() {
-    dialogRef.current?.close("confirm");
+    setOpen(false);
     startTransition(() => {
       formRef.current?.requestSubmit();
     });
@@ -59,51 +52,41 @@ export function ConfirmActionForm({
   return (
     <>
       <form ref={formRef} action={action} className="inline-block">
-        <button
-          type="button"
-          onClick={handleOpen}
-          disabled={isPending}
-          aria-label={triggerAriaLabel}
-          title={triggerTitle}
-          className={triggerClassName}
-        >
-          {children}
-        </button>
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogTrigger
+            render={
+              <button
+                type="button"
+                disabled={isPending}
+                aria-label={triggerAriaLabel}
+                title={triggerTitle}
+                className={triggerClassName}
+              >
+                {children}
+              </button>
+            }
+          />
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{title}</AlertDialogTitle>
+              <AlertDialogDescription>{description}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel autoFocus className="min-h-11">
+                {cancelLabel}
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirm}
+                disabled={isPending}
+                variant={variant === "danger" ? "destructive" : "default"}
+                className="min-h-11"
+              >
+                {isPending ? "Memproses..." : confirmLabel}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </form>
-
-      <dialog
-        ref={dialogRef}
-        aria-labelledby={titleId}
-        aria-describedby={descId}
-        onClose={handleClose}
-        className="m-auto w-[min(92dvw,26rem)] rounded-xl border border-slate-200 bg-white p-6 text-left text-slate-900 shadow-xl"
-      >
-        <h2 id={titleId} className="text-lg font-bold text-slate-900">
-          {title}
-        </h2>
-        <p id={descId} className="mt-2 text-sm leading-relaxed text-slate-600">
-          {description}
-        </p>
-
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            autoFocus
-            onClick={() => dialogRef.current?.close("cancel")}
-            className="min-h-11 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            disabled={isPending}
-            className={`min-h-11 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-60 ${confirmButtonStyles[variant]}`}
-          >
-            {isPending ? "Memproses..." : confirmLabel}
-          </button>
-        </div>
-      </dialog>
     </>
   );
 }

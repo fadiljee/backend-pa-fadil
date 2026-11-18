@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
-import { GraduationCap, Menu, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { GraduationCap, Menu } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -19,8 +26,7 @@ const navLinks = [
 export function Navbar({ isLoggedIn }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const drawerRef = useRef<HTMLDialogElement>(null);
-  const drawerId = useId();
+  const navListRef = useRef<HTMLUListElement>(null);
 
   const adminHref = isLoggedIn ? "/admin" : "/login";
   const adminLabel = isLoggedIn ? "Panel Admin" : "Masuk Admin";
@@ -32,17 +38,48 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  function openDrawer() {
-    const dialog = drawerRef.current;
-    if (!dialog || dialog.open) return;
-    dialog.showModal();
-    setDrawerOpen(true);
-  }
+  useEffect(() => {
+    const navList = navListRef.current;
+    if (!navList) return;
+    const links = Array.from(navList.querySelectorAll<HTMLAnchorElement>("a[href^='#']"));
 
-  function closeDrawer() {
-    drawerRef.current?.close();
-    setDrawerOpen(false);
-  }
+    if (CSS.supports("scroll-target-group", "auto")) {
+      const syncAriaCurrent = () => {
+        const currentLink = navList.querySelector("a:target-current");
+        links.forEach((link) => {
+          link.setAttribute("aria-current", link === currentLink ? "true" : "false");
+        });
+      };
+      syncAriaCurrent();
+      document.addEventListener("scrollend", syncAriaCurrent);
+      return () => document.removeEventListener("scrollend", syncAriaCurrent);
+    }
+
+    const targets = links
+      .map((l) => document.getElementById(l.getAttribute("href")?.slice(1) ?? ""))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (targets.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute("id");
+            links.forEach((link) => {
+              const isActive = link.getAttribute("href") === `#${id}`;
+              link.classList.toggle("target-current", isActive);
+              link.setAttribute("aria-current", isActive ? "true" : "false");
+            });
+          }
+        }
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+
+    targets.forEach((t) => observer.observe(t));
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <header
@@ -56,7 +93,7 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
             <GraduationCap className="h-5 w-5" aria-hidden="true" />
           </span>
           <span className="flex flex-col">
-            <span className="text-[11px] font-medium leading-tight text-muted">
+            <span className="text-[11px] font-medium leading-tight text-muted-foreground">
               SMPN 1 Merawang
             </span>
             <span className="text-sm font-extrabold leading-tight text-heading">
@@ -66,14 +103,12 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
         </Link>
 
         <nav aria-label="Utama" className="hidden items-center gap-6 lg:flex">
-          <ul className="flex items-center gap-7">
-            {navLinks.map((link, idx) => (
+          <ul ref={navListRef} className="scrollspy-nav flex items-center gap-7">
+            {navLinks.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className={`inline-flex min-h-11 items-center text-[13px] font-semibold transition-colors hover:text-primary ${
-                    idx === 0 ? "text-primary" : "text-heading"
-                  }`}
+                  className="inline-flex min-h-11 items-center border-b-2 border-transparent text-[13px] font-semibold text-heading transition-colors hover:text-primary"
                 >
                   {link.label}
                 </a>
@@ -88,69 +123,57 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
           </Link>
         </nav>
 
-        <button
-          type="button"
-          onClick={openDrawer}
-          aria-label="Buka menu navigasi"
-          aria-expanded={drawerOpen}
-          aria-controls={drawerId}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-heading hover:bg-soft lg:hidden"
-        >
-          <Menu className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <SheetTrigger
+            render={
+              <button
+                type="button"
+                aria-label="Buka menu navigasi"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[10px] border border-slate-200 bg-white text-heading hover:bg-soft lg:hidden"
+              >
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              </button>
+            }
+          />
+          <SheetContent side="right" className="w-[78dvw] max-w-[320px] p-0">
+            <SheetHeader className="border-b border-soft px-5 py-4 text-left">
+              <SheetTitle className="text-sm font-bold text-heading">Menu</SheetTitle>
+            </SheetHeader>
+
+            <nav aria-label="Menu mobile" className="flex-1 overflow-y-auto px-5 py-4">
+              <ul className="divide-y divide-soft">
+                {navLinks.map((link) => (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      onClick={() => setDrawerOpen(false)}
+                      className="flex min-h-11 items-center py-2 text-sm font-semibold text-heading hover:text-primary"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="border-t border-soft p-5">
+              <Link
+                href={adminHref}
+                onClick={() => setDrawerOpen(false)}
+                className="flex min-h-11 w-full items-center justify-center rounded-[10px] bg-primary px-6 text-sm font-semibold text-white shadow-(--shadow-btn) hover:bg-primary-dark"
+              >
+                {adminLabel}
+              </Link>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
-      <dialog
-        id={drawerId}
-        ref={drawerRef}
-        aria-label="Menu navigasi"
-        onClose={() => setDrawerOpen(false)}
-        onClick={(e) => {
-          if (e.target === drawerRef.current) closeDrawer();
-        }}
-        className="m-0 ml-auto h-dvh max-h-dvh w-[78dvw] max-w-[320px] border-0 bg-white p-0 text-heading shadow-2xl"
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center justify-between border-b border-soft px-5">
-            <span className="text-sm font-bold text-heading">Menu</span>
-            <button
-              type="button"
-              autoFocus
-              onClick={closeDrawer}
-              aria-label="Tutup menu navigasi"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[10px] text-heading hover:bg-soft"
-            >
-              <X className="h-5 w-5" aria-hidden="true" />
-            </button>
-          </div>
-
-          <nav aria-label="Menu mobile" className="flex-1 overflow-y-auto px-5 py-4">
-            <ul className="divide-y divide-soft">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    onClick={closeDrawer}
-                    className="flex min-h-11 items-center py-2 text-sm font-semibold text-heading hover:text-primary"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="border-t border-soft p-5">
-            <Link
-              href={adminHref}
-              onClick={closeDrawer}
-              className="flex min-h-11 w-full items-center justify-center rounded-[10px] bg-primary px-6 text-sm font-semibold text-white shadow-(--shadow-btn) hover:bg-primary-dark"
-            >
-              {adminLabel}
-            </Link>
-          </div>
-        </div>
-      </dialog>
+      {/* Indikator progres baca berbasis CSS scroll-driven animation */}
+      <div
+        aria-hidden="true"
+        className="scroll-progress-bar pointer-events-none absolute inset-x-0 bottom-0 hidden h-[3px] bg-primary motion-safe:[@supports(animation-timeline:scroll())]:block"
+      />
     </header>
   );
 }

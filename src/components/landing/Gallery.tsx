@@ -18,6 +18,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
   return (
     <section
       id="galeri"
+      tabIndex={-1}
       className="scroll-mt-20 mx-auto max-w-[1080px] px-3 py-8 sm:px-5 md:px-8 lg:px-12 lg:py-12"
     >
       <div className="relative overflow-hidden rounded-[24px] bg-primary px-4 py-10 text-white sm:px-8 md:rounded-[32px] md:p-12">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -13,10 +13,16 @@ import {
   LogOut,
   GraduationCap,
   Menu,
-  X,
 } from "lucide-react";
 import { logoutAdminAction } from "@/app/login/actions";
 import { ConfirmActionForm } from "@/components/ui/ConfirmActionForm";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -39,7 +45,7 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col bg-slate-900 text-slate-100">
       <div className="flex h-16 items-center gap-3 border-b border-slate-800 px-5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-800">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
           <GraduationCap className="h-5 w-5 text-white" aria-hidden="true" />
         </div>
         <div className="min-w-0">
@@ -64,7 +70,7 @@ function SidebarContent({
               aria-current={isActive ? "page" : undefined}
               className={`flex min-h-11 items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition focus-visible:outline-white ${
                 isActive
-                  ? "bg-indigo-800 text-white"
+                  ? "bg-primary text-white"
                   : "text-slate-200 hover:bg-slate-800 hover:text-white"
               }`}
             >
@@ -98,84 +104,48 @@ function SidebarContent({
 
 export function Sidebar({ adminName }: { adminName: string }) {
   const pathname = usePathname();
-  const drawerRef = useRef<HTMLDialogElement>(null);
-  const drawerId = useId();
   const [isOpen, setIsOpen] = useState(false);
-
-  function openDrawer() {
-    const dialog = drawerRef.current;
-    if (!dialog || dialog.open) return;
-    dialog.showModal();
-    setIsOpen(true);
-  }
-
-  function closeDrawer() {
-    drawerRef.current?.close();
-    setIsOpen(false);
-  }
 
   useEffect(() => {
     setIsOpen(false);
-    if (drawerRef.current?.open) {
-      drawerRef.current.close();
-    }
   }, [pathname]);
 
   return (
     <>
       <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 text-slate-100 md:hidden">
         <Link href="/admin" className="flex items-center gap-2.5 focus-visible:outline-white">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-800">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <GraduationCap className="h-5 w-5 text-white" aria-hidden="true" />
           </div>
           <span className="text-sm font-bold">SMPN 1 Merawang</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={openDrawer}
-          aria-expanded={isOpen}
-          aria-controls={drawerId}
-          className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3.5 text-sm font-medium text-slate-100 hover:bg-slate-700 focus-visible:outline-white"
-        >
-          <Menu className="h-4 w-4" aria-hidden="true" />
-          <span>Menu</span>
-        </button>
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger
+            render={
+              <button
+                type="button"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3.5 text-sm font-medium text-slate-100 hover:bg-slate-700 focus-visible:outline-white"
+              >
+                <Menu className="h-4 w-4" aria-hidden="true" />
+                <span>Menu</span>
+              </button>
+            }
+          />
+          <SheetContent side="left" className="w-[min(18rem,85dvw)] border-slate-800 bg-slate-900 p-0 text-slate-100">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Menu Navigasi Admin</SheetTitle>
+            </SheetHeader>
+            <div className="h-full overflow-y-auto">
+              <SidebarContent
+                adminName={adminName}
+                pathname={pathname}
+                onNavigate={() => setIsOpen(false)}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
       </header>
-
-      <dialog
-        id={drawerId}
-        ref={drawerRef}
-        aria-label="Menu navigasi admin"
-        onClose={() => setIsOpen(false)}
-        onClick={(e) => {
-          if (e.target === drawerRef.current) {
-            closeDrawer();
-          }
-        }}
-        className="m-0 h-dvh max-h-dvh w-[min(18rem,85dvw)] max-w-none border-0 bg-slate-900 p-0 text-slate-100 shadow-2xl"
-      >
-        <div className="flex h-full flex-col">
-          <div className="flex justify-end border-b border-slate-800 p-2">
-            <button
-              type="button"
-              autoFocus
-              onClick={closeDrawer}
-              aria-label="Tutup menu navigasi"
-              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-200 hover:bg-slate-800 focus-visible:outline-white"
-            >
-              <X className="h-5 w-5" aria-hidden="true" />
-            </button>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <SidebarContent
-              adminName={adminName}
-              pathname={pathname}
-              onNavigate={closeDrawer}
-            />
-          </div>
-        </div>
-      </dialog>
 
       <aside className="hidden w-64 shrink-0 md:block">
         <div className="sticky top-0 h-dvh overflow-y-auto">

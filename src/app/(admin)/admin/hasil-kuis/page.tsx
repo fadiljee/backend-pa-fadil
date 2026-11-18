@@ -3,6 +3,17 @@ import { env } from "@/lib/config/env";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { SiswaRow } from "@/lib/supabase/types";
 import { Pagination } from "@/components/admin/Pagination";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Search, History } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -68,29 +79,31 @@ export default async function HasilKuisListPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Hasil Kuis Siswa</h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-600">
           Pilih siswa untuk melihat riwayat detail jawaban kuis
         </p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <Card className="overflow-hidden border-slate-200 py-0 gap-0">
         <div className="p-4 border-b border-slate-200">
           <form method="GET" className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-[200px] max-w-sm">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
+              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" aria-hidden="true" />
+              <Input
                 type="text"
                 name="search"
                 defaultValue={search}
+                aria-label="Cari nama siswa"
                 placeholder="Cari nama siswa..."
-                className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="min-h-11 pl-9"
               />
             </div>
 
             <select
               name="kelas"
               defaultValue={kelas}
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              aria-label="Filter berdasarkan kelas"
+              className="min-h-11 px-3 py-2 border border-input rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">Semua Kelas</option>
               {kelasList.map((k) => (
@@ -100,55 +113,50 @@ export default async function HasilKuisListPage({
               ))}
             </select>
 
-            <button
-              type="submit"
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-medium rounded-lg cursor-pointer"
-            >
+            <Button type="submit" variant="secondary" className="min-h-11 bg-slate-800 text-white hover:bg-slate-900">
               Filter
-            </button>
+            </Button>
           </form>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-              <tr>
-                <th className="px-4 py-3">No</th>
-                <th className="px-4 py-3">NISN</th>
-                <th className="px-4 py-3">Nama Siswa</th>
-                <th className="px-4 py-3">Kelas</th>
-                <th className="px-4 py-3 text-right">Riwayat</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {siswaList.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
-                    Belum ada siswa yang mengerjakan kuis.
-                  </td>
-                </tr>
-              ) : (
-                siswaList.map((s, idx) => (
-                  <tr key={s.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 text-slate-500">{offset + idx + 1}</td>
-                    <td className="px-4 py-3 font-mono text-slate-700">{s.nisn}</td>
-                    <td className="px-4 py-3 font-medium text-slate-900">{s.nama}</td>
-                    <td className="px-4 py-3 text-slate-700">{s.kelas}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/admin/hasil-kuis/${s.id}/riwayat`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold"
-                      >
-                        <History className="w-3.5 h-3.5" />
-                        Lihat Riwayat
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead className="px-4 py-3">No</TableHead>
+              <TableHead className="px-4 py-3">NISN</TableHead>
+              <TableHead className="px-4 py-3">Nama Siswa</TableHead>
+              <TableHead className="px-4 py-3">Kelas</TableHead>
+              <TableHead className="px-4 py-3 text-right">Riwayat</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {siswaList.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="px-4 py-8 text-center text-slate-600">
+                  Belum ada siswa yang mengerjakan kuis.
+                </TableCell>
+              </TableRow>
+            ) : (
+              siswaList.map((s, idx) => (
+                <TableRow key={s.id}>
+                  <TableCell className="px-4 py-3 text-slate-600">{offset + idx + 1}</TableCell>
+                  <TableCell className="px-4 py-3 font-mono text-slate-700">{s.nisn}</TableCell>
+                  <TableCell className="px-4 py-3 font-medium text-slate-900">{s.nama}</TableCell>
+                  <TableCell className="px-4 py-3 text-slate-700">{s.kelas}</TableCell>
+                  <TableCell className="px-4 py-3 text-right">
+                    <Link
+                      href={`/admin/hasil-kuis/${s.id}/riwayat`}
+                      className="inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-light hover:bg-sky-100 text-primary text-xs font-semibold"
+                    >
+                      <History className="w-3.5 h-3.5" aria-hidden="true" />
+                      Lihat Riwayat
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
 
         <Pagination
           currentPage={page}
@@ -156,7 +164,7 @@ export default async function HasilKuisListPage({
           basePath="/admin/hasil-kuis"
           extraParams={extraParams}
         />
-      </div>
+      </Card>
     </div>
   );
 }
