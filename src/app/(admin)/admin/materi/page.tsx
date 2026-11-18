@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { MateriRow } from "@/lib/supabase/types";
 import { getGambarUrl } from "@/lib/storage";
 import { Pagination } from "@/components/admin/Pagination";
+import { ConfirmActionForm } from "@/components/ui/ConfirmActionForm";
 import { deleteMateriAction } from "./actions";
 import { Plus, Pencil, Trash2, Image as ImageIcon } from "lucide-react";
 
@@ -76,12 +77,14 @@ export default async function MateriListPage({
                         {imgUrl ? (
                           <img
                             src={imgUrl}
-                            alt={m.judul}
+                            alt={`Ilustrasi materi ${m.judul}`}
+                            width={56}
+                            height={40}
                             className="w-14 h-10 object-cover rounded border border-slate-200"
                           />
                         ) : (
-                          <div className="w-14 h-10 rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400">
-                            <ImageIcon className="w-4 h-4" />
+                          <div className="w-14 h-10 rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-500">
+                            <ImageIcon className="w-4 h-4" aria-hidden="true" />
                           </div>
                         )}
                       </td>
@@ -93,20 +96,23 @@ export default async function MateriListPage({
                         <div className="inline-flex items-center gap-2">
                           <Link
                             href={`/admin/materi/${m.id}/edit`}
-                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50"
-                            title="Edit"
+                            aria-label={`Edit materi ${m.judul}`}
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-amber-700 hover:bg-amber-50"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-4 h-4" aria-hidden="true" />
                           </Link>
-                          <form action={deleteMateriAction.bind(null, m.id)}>
-                            <button
-                              type="submit"
-                              className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 cursor-pointer"
-                              title="Hapus"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </form>
+                          <ConfirmActionForm
+                            action={deleteMateriAction.bind(null, m.id)}
+                            title="Hapus Materi?"
+                            description={`Materi "${m.judul}" beserta seluruh soal kuis terkait akan dihapus permanen.`}
+                            confirmLabel="Ya, Hapus"
+                            cancelLabel="Batal"
+                            variant="danger"
+                            triggerAriaLabel={`Hapus materi ${m.judul}`}
+                            triggerClassName="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
+                          </ConfirmActionForm>
                         </div>
                       </td>
                     </tr>
