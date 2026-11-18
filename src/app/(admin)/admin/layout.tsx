@@ -13,9 +13,17 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-100">
+    <div className="min-h-screen bg-[#faf9f6] md:flex">
+      <a
+        href="#admin-main"
+        className="visually-hidden fixed left-3 top-3 z-50 rounded-lg bg-indigo-800 px-4 py-2 text-sm font-semibold text-white shadow-md"
+      >
+        Lewati ke konten utama
+      </a>
       <Sidebar adminName={session.nama ?? "Admin"} />
-      <main className="flex-1 min-w-0 p-6 md:p-8">{children}</main>
+      <main id="admin-main" tabIndex={-1} className="min-w-0 flex-1 p-4 sm:p-6 md:p-8">
+        {children}
+      </main>
     </div>
   );
 }

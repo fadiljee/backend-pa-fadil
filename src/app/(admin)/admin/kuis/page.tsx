@@ -3,6 +3,7 @@ import { env } from "@/lib/config/env";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { KuisRow } from "@/lib/supabase/types";
 import { Pagination } from "@/components/admin/Pagination";
+import { ConfirmActionForm } from "@/components/ui/ConfirmActionForm";
 import { deleteKuisAction } from "./actions";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 
@@ -91,20 +92,23 @@ export default async function KuisListPage({
                         <div className="inline-flex items-center gap-2">
                           <Link
                             href={`/admin/kuis/${k.id}/edit`}
-                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50"
-                            title="Edit"
+                            aria-label={`Edit soal kuis nomor ${offset + idx + 1}`}
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-amber-700 hover:bg-amber-50"
                           >
-                            <Pencil className="w-4 h-4" />
+                            <Pencil className="w-4 h-4" aria-hidden="true" />
                           </Link>
-                          <form action={deleteKuisAction.bind(null, k.id)}>
-                            <button
-                              type="submit"
-                              className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 cursor-pointer"
-                              title="Hapus"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </form>
+                          <ConfirmActionForm
+                            action={deleteKuisAction.bind(null, k.id)}
+                            title="Hapus Soal Kuis?"
+                            description={`Soal kuis "${k.pertanyaan.slice(0, 80)}${k.pertanyaan.length > 80 ? "..." : ""}" akan dihapus permanen dari bank soal.`}
+                            confirmLabel="Ya, Hapus"
+                            cancelLabel="Batal"
+                            variant="danger"
+                            triggerAriaLabel={`Hapus soal kuis nomor ${offset + idx + 1}`}
+                            triggerClassName="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
+                          </ConfirmActionForm>
                         </div>
                       </td>
                     </tr>

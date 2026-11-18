@@ -42,11 +42,11 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-indigo-600 text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="bg-indigo-800 text-white rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Dashboard Admin</h1>
           <p className="text-indigo-100 text-sm mt-1">
-            Ringkasan data nyata sistem Media Pembelajaran Matematika SMPN 1 Merawang
+            Ringkasan aktivitas belajar, materi, dan capaian kuis siswa SMPN 1 Merawang
           </p>
         </div>
         <div className="text-xs bg-white/15 px-3 py-1.5 rounded-full self-start sm:self-auto">
@@ -114,7 +114,7 @@ export default async function AdminDashboardPage() {
 
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">Nilai 70 – 84</span>
+                <span className="text-slate-600">Nilai 70 sampai 84</span>
                 <span className="font-semibold text-amber-600">
                   {sedang} siswa ({Math.round((sedang / totalEvaluated) * 100)}%)
                 </span>
@@ -152,9 +152,9 @@ export default async function AdminDashboardPage() {
             </h2>
             <Link
               href="/admin/leaderboard"
-              className="text-xs font-medium text-indigo-600 hover:underline"
+              className="text-xs font-medium text-indigo-800 hover:underline"
             >
-              Lihat Semua →
+              Lihat semua peringkat
             </Link>
           </div>
           {topSiswa.length === 0 ? (
@@ -186,19 +186,19 @@ export default async function AdminDashboardPage() {
           <h2 className="text-base font-semibold text-slate-900">5 Materi Terbaru</h2>
           <Link
             href="/admin/materi"
-            className="text-xs font-medium text-indigo-600 hover:underline"
+            className="text-xs font-medium text-indigo-800 hover:underline"
           >
-            Kelola Materi →
+            Kelola semua materi
           </Link>
         </div>
         {!materiTerbaru || materiTerbaru.length === 0 ? (
-          <p className="text-sm text-slate-500">Belum ada materi.</p>
+          <p className="text-sm text-slate-600">Belum ada materi.</p>
         ) : (
           <ul className="divide-y divide-slate-100">
             {(materiTerbaru as MateriRow[]).map((m) => (
               <li key={m.id} className="py-2.5 flex items-center justify-between text-sm">
                 <span className="font-medium text-slate-800">{m.judul}</span>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-600">
                   {new Date(m.created_at).toLocaleDateString("id-ID")}
                 </span>
               </li>
