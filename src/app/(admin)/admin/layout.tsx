@@ -13,10 +13,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f6] md:flex">
+    <div className="min-h-screen bg-slate-50 md:flex">
       <a
         href="#admin-main"
-        className="visually-hidden fixed left-3 top-3 z-50 rounded-lg bg-indigo-800 px-4 py-2 text-sm font-semibold text-white shadow-md"
+        className="sr-only focus:not-sr-only fixed left-3 top-3 z-50 rounded-lg bg-sky-900 px-4 py-2 text-sm font-semibold text-white shadow-md"
       >
         Lewati ke konten utama
       </a>

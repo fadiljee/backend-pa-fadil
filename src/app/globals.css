@@ -1,9 +1,50 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #054e85;
+  --color-primary-dark: #043b66;
+  --color-primary-light: #e6eff7;
+  --color-heading: #1b2433;
+  --color-body: #3a4350;
+  --color-muted: #6b7685;
+  --color-soft: #f3f5f8;
+  --color-cardborder: #8fb3d6;
+  --color-doodle: #9aa5b1;
+  --color-hero-from: #e6ebf3;
+  --color-hero-to: #f6f8fb;
+  --color-accent-green: #a8db8f;
+  --color-accent-blue: #8ec5f0;
+  --color-accent-pink: #f7b6cf;
+  --color-accent-yellow: #f6d45b;
+
+  --font-sans: var(--font-noto), system-ui, -apple-system, sans-serif;
+
+  --shadow-card: 0 6px 18px rgba(20, 40, 80, 0.06);
+  --shadow-card-active: 0 10px 24px rgba(5, 78, 133, 0.3);
+  --shadow-btn: 0 4px 10px rgba(5, 78, 133, 0.25);
+
+  --animate-float: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
-  background-color: #faf9f6;
-  color: #1e293b;
+  background-color: #ffffff;
+  color: #3a4350;
 }
 
 @layer base {
@@ -24,7 +65,7 @@ body {
   }
 
   :where(a[href], button, input, select, textarea, summary, [tabindex]):focus-visible {
-    outline: 3px solid #3730a3;
+    outline: 3px solid rgb(5 78 133 / 0.65);
     outline-offset: 2px;
   }
 }
@@ -35,22 +76,17 @@ dialog:modal {
 }
 
 dialog::backdrop {
-  background-color: rgb(15 23 42 / 0.55);
+  background-color: rgb(15 23 42 / 0.45);
   overflow: hidden;
   overscroll-behavior: contain;
 }
 
-/* Utilitas aksesibilitas untuk skip link dan teks khusus pembaca layar */
-.visually-hidden:where(:not(:focus-within, :active)) {
-  position: absolute !important;
-  clip-path: inset(50%) !important;
-  overflow: hidden !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: -1px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  white-space: nowrap !important;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
