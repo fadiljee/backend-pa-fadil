@@ -10,13 +10,6 @@ export interface CourseItem {
   konten: string;
 }
 
-const stripColors = [
-  "bg-accent-yellow",
-  "bg-accent-green",
-  "bg-accent-blue",
-  "bg-accent-pink",
-];
-
 export function Courses({
   materiList,
   connected,
@@ -38,6 +31,7 @@ export function Courses({
   return (
     <section
       id="materi"
+      tabIndex={-1}
       className="scroll-mt-20 mx-auto max-w-[1080px] px-5 py-16 md:px-8 lg:px-12 lg:py-24"
     >
       <div className="text-center">
@@ -74,7 +68,6 @@ export function Courses({
           >
             {materiList.map((m, idx) => {
               const isActive = idx === activeIndex;
-              const stripClass = stripColors[idx % stripColors.length];
 
               return (
                 <article
@@ -114,13 +107,6 @@ export function Courses({
                       Lihat Detail
                     </Link>
                   </div>
-
-                  {!isActive && (
-                    <span
-                      className={`absolute inset-x-0 bottom-0 h-1.5 ${stripClass}`}
-                      aria-hidden="true"
-                    />
-                  )}
                 </article>
               );
             })}

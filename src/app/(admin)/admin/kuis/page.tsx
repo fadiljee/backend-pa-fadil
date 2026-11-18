@@ -4,6 +4,17 @@ import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { KuisRow } from "@/lib/supabase/types";
 import { Pagination } from "@/components/admin/Pagination";
 import { ConfirmActionForm } from "@/components/ui/ConfirmActionForm";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { deleteKuisAction } from "./actions";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 
@@ -39,88 +50,88 @@ export default async function KuisListPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Data Kuis</h1>
-          <p className="text-sm text-slate-500">Kelola bank soal pilihan ganda per materi</p>
+          <p className="text-sm text-slate-600">Kelola bank soal pilihan ganda per materi</p>
         </div>
-        <Link
-          href="/admin/kuis/tambah"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition"
-        >
-          <Plus className="w-4 h-4" />
-          Tambah Kuis
-        </Link>
+        <Button
+          nativeButton={false}
+          render={
+            <Link href="/admin/kuis/tambah" className="min-h-11 gap-2 px-4 shadow-sm">
+              <Plus className="w-4 h-4" aria-hidden="true" />
+              Tambah Kuis
+            </Link>
+          }
+        />
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-              <tr>
-                <th className="px-4 py-3">No</th>
-                <th className="px-4 py-3">Materi</th>
-                <th className="px-4 py-3">Pertanyaan</th>
-                <th className="px-4 py-3">Kunci</th>
-                <th className="px-4 py-3">Nilai</th>
-                <th className="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {rows.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
-                    Belum ada soal kuis.
-                  </td>
-                </tr>
-              ) : (
-                rows.map((k, idx) => {
-                  const m = Array.isArray(k.materis) ? k.materis[0] : k.materis;
-                  return (
-                    <tr key={k.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 text-slate-500">{offset + idx + 1}</td>
-                      <td className="px-4 py-3 font-medium text-indigo-700">
-                        {m?.judul ?? "-"}
-                      </td>
-                      <td className="px-4 py-3 text-slate-800 max-w-md truncate">
-                        {k.pertanyaan}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold uppercase text-xs">
-                          {k.jawaban_benar}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-slate-700">{k.nilai}</td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="inline-flex items-center gap-2">
-                          <Link
-                            href={`/admin/kuis/${k.id}/edit`}
-                            aria-label={`Edit soal kuis nomor ${offset + idx + 1}`}
-                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-amber-700 hover:bg-amber-50"
-                          >
-                            <Pencil className="w-4 h-4" aria-hidden="true" />
-                          </Link>
-                          <ConfirmActionForm
-                            action={deleteKuisAction.bind(null, k.id)}
-                            title="Hapus Soal Kuis?"
-                            description={`Soal kuis "${k.pertanyaan.slice(0, 80)}${k.pertanyaan.length > 80 ? "..." : ""}" akan dihapus permanen dari bank soal.`}
-                            confirmLabel="Ya, Hapus"
-                            cancelLabel="Batal"
-                            variant="danger"
-                            triggerAriaLabel={`Hapus soal kuis nomor ${offset + idx + 1}`}
-                            triggerClassName="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" aria-hidden="true" />
-                          </ConfirmActionForm>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+      <Card className="overflow-hidden border-slate-200 py-0 gap-0">
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead className="px-4 py-3">No</TableHead>
+              <TableHead className="px-4 py-3">Materi</TableHead>
+              <TableHead className="px-4 py-3">Pertanyaan</TableHead>
+              <TableHead className="px-4 py-3">Kunci</TableHead>
+              <TableHead className="px-4 py-3">Nilai</TableHead>
+              <TableHead className="px-4 py-3 text-right">Aksi</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="px-4 py-8 text-center text-slate-600">
+                  Belum ada soal kuis.
+                </TableCell>
+              </TableRow>
+            ) : (
+              rows.map((k, idx) => {
+                const m = Array.isArray(k.materis) ? k.materis[0] : k.materis;
+                return (
+                  <TableRow key={k.id}>
+                    <TableCell className="px-4 py-3 text-slate-600">{offset + idx + 1}</TableCell>
+                    <TableCell className="px-4 py-3 font-medium text-primary">
+                      {m?.judul ?? "-"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-slate-800 max-w-md truncate">
+                      {k.pertanyaan}
+                    </TableCell>
+                    <TableCell className="px-4 py-3">
+                      <Badge className="bg-emerald-100 text-emerald-800 uppercase font-bold">
+                        {k.jawaban_benar}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-slate-700">{k.nilai}</TableCell>
+                    <TableCell className="px-4 py-3 text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <Link
+                          href={`/admin/kuis/${k.id}/edit`}
+                          aria-label={`Edit soal kuis nomor ${offset + idx + 1}`}
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-amber-700 hover:bg-amber-50"
+                        >
+                          <Pencil className="w-4 h-4" aria-hidden="true" />
+                        </Link>
+                        <ConfirmActionForm
+                          action={deleteKuisAction.bind(null, k.id)}
+                          title="Hapus Soal Kuis?"
+                          description={`Soal kuis "${k.pertanyaan.slice(0, 80)}${k.pertanyaan.length > 80 ? "..." : ""}" akan dihapus permanen dari bank soal.`}
+                          confirmLabel="Ya, Hapus"
+                          cancelLabel="Batal"
+                          variant="danger"
+                          triggerAriaLabel={`Hapus soal kuis nomor ${offset + idx + 1}`}
+                          triggerClassName="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" aria-hidden="true" />
+                        </ConfirmActionForm>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
 
         <Pagination currentPage={page} totalPages={totalPages} basePath="/admin/kuis" />
-      </div>
+      </Card>
     </div>
   );
 }

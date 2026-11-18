@@ -3,7 +3,7 @@ import { GraduationCap, Mail, MapPin, Phone } from "lucide-react";
 
 export function Footer({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <footer id="kontak" className="scroll-mt-20 mt-12 bg-primary-dark text-white">
+    <footer id="kontak" tabIndex={-1} className="scroll-mt-20 mt-12 bg-primary-dark text-white">
       <div className="mx-auto max-w-[1080px] px-5 py-12 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div>

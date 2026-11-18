@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { createMateriAction, MateriActionState } from "../actions";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 
 const initialState: MateriActionState = {};
@@ -15,76 +20,74 @@ export default function TambahMateriPage() {
       <div className="flex items-center gap-3">
         <Link
           href="/admin/materi"
-          className="p-2 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
+          aria-label="Kembali ke data materi"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" />
         </Link>
         <h1 className="text-2xl font-bold text-slate-900">Tambah Materi</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        {state.error && (
-          <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-            {state.error}
-          </div>
-        )}
+      <Card className="border-slate-200">
+        <CardContent>
+          {state.error && (
+            <div role="alert" className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              {state.error}
+            </div>
+          )}
 
-        <form action={formAction} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Judul Materi *
-            </label>
-            <input
-              name="judul"
-              type="text"
-              required
-              placeholder="Contoh: Operasi Hitung Bilangan Bulat"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+          <form action={formAction} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="judul">Judul Materi *</Label>
+              <Input
+                id="judul"
+                name="judul"
+                type="text"
+                required
+                placeholder="Contoh: Operasi Hitung Bilangan Bulat"
+                className="min-h-11"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Konten Materi *
-            </label>
-            <textarea
-              name="konten"
-              rows={8}
-              required
-              placeholder="Tuliskan isi materi pembelajaran..."
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="konten">Konten Materi *</Label>
+              <Textarea
+                id="konten"
+                name="konten"
+                rows={8}
+                required
+                placeholder="Tuliskan isi materi pembelajaran..."
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">
-              Gambar Ilustrasi (Opsional, JPG/PNG, maks. 2 MB)
-            </label>
-            <input
-              name="gambar"
-              type="file"
-              accept="image/jpeg,image/png"
-              className="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="gambar">Gambar Ilustrasi (Opsional, JPG/PNG, maks. 2 MB)</Label>
+              <Input
+                id="gambar"
+                name="gambar"
+                type="file"
+                accept="image/jpeg,image/png"
+                className="min-h-11 cursor-pointer file:mr-4 file:rounded-md file:border-0 file:bg-primary-light file:px-3 file:py-1 file:text-xs file:font-semibold file:text-primary"
+              />
+            </div>
 
-          <div className="flex justify-end gap-3 pt-2">
-            <Link
-              href="/admin/materi"
-              className="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 text-sm font-medium hover:bg-slate-50"
-            >
-              Batal
-            </Link>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-medium cursor-pointer"
-            >
-              {isPending ? "Menyimpan..." : "Simpan Materi"}
-            </button>
-          </div>
-        </form>
-      </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant="outline"
+                nativeButton={false}
+                render={
+                  <Link href="/admin/materi" className="min-h-11 px-4">
+                    Batal
+                  </Link>
+                }
+              />
+              <Button type="submit" disabled={isPending} className="min-h-11 px-5">
+                {isPending ? "Menyimpan..." : "Simpan Materi"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

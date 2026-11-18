@@ -12,7 +12,7 @@ function HeroBooksIllustration() {
   return (
     <svg
       viewBox="0 0 460 380"
-      className="mx-auto h-auto w-[78%] max-w-[300px] lg:ml-auto lg:mr-0 lg:w-full lg:max-w-[460px] motion-safe:animate-float"
+      className="mx-auto h-auto w-[78%] max-w-[300px] lg:ml-auto lg:mr-0 lg:w-full lg:max-w-[460px]"
       role="img"
       aria-label="Ilustrasi tumpukan empat buku matematika dan topi toga akademik"
     >
@@ -52,6 +52,7 @@ export function Hero({ connected, siswaCount, materiCount, isLoggedIn }: HeroPro
   return (
     <section
       id="home"
+      tabIndex={-1}
       className="relative overflow-hidden bg-gradient-to-b from-hero-from to-hero-to pb-28 pt-10 md:pb-36 lg:min-h-[580px] lg:pb-44 lg:pt-14"
     >
       <div className="relative z-10 mx-auto grid max-w-[960px] grid-cols-1 items-center gap-10 px-5 md:px-8 lg:grid-cols-2 lg:px-12">

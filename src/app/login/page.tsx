@@ -3,7 +3,19 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { loginAdminAction, LoginState } from "./actions";
-import { Lock, Mail, BookOpen } from "lucide-react";
+import { Lock, Mail, GraduationCap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 const initialState: LoginState = {};
 
@@ -11,88 +23,91 @@ export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAdminAction, initialState);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-        <div className="flex flex-col items-center mb-6 text-center">
-          <div className="w-12 h-12 rounded-xl bg-indigo-800 text-white flex items-center justify-center mb-3">
-            <BookOpen className="w-6 h-6" aria-hidden="true" />
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-b from-hero-from to-hero-to px-4 py-10">
+      <Card className="w-full max-w-md rounded-2xl border-cardborder bg-white shadow-(--shadow-card)">
+        <CardHeader className="items-center text-center pt-4">
+          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-[10px] bg-primary text-white shadow-(--shadow-btn)">
+            <GraduationCap className="h-6 w-6" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">SMPN 1 Merawang</h1>
-          <p className="text-sm text-slate-600 mt-1">
-            Panel Admin Media Pembelajaran Matematika
-          </p>
-        </div>
+          <CardTitle className="text-2xl font-bold text-heading">SMPN 1 Merawang</CardTitle>
+          <CardDescription className="text-sm text-body">
+            Masuk ke Panel Admin Portal Sekolah
+          </CardDescription>
+        </CardHeader>
 
-        {state.error && (
-          <div
-            role="alert"
-            className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800"
-          >
-            {state.error}
-          </div>
-        )}
-
-        <form action={formAction} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-slate-800 mb-1">
-              Email Admin
-            </label>
-            <div className="relative">
-              <Mail
-                className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"
-                aria-hidden="true"
-              />
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                placeholder="admin@smpn1merawang.sch.id"
-                className="w-full min-h-11 pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:border-indigo-800"
-              />
+        <CardContent>
+          {state.error && (
+            <div
+              role="alert"
+              className="mb-4 rounded-[10px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            >
+              {state.error}
             </div>
-          </div>
+          )}
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-800 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock
-                className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"
-                aria-hidden="true"
-              />
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                autoComplete="current-password"
-                placeholder="Masukkan password admin"
-                className="w-full min-h-11 pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:border-indigo-800"
-              />
+          <form action={formAction} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-sm font-semibold text-heading">
+                Email Admin
+              </Label>
+              <div className="relative">
+                <Mail
+                  className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  placeholder="admin@smpn1merawang.sch.id"
+                  className="min-h-11 rounded-[10px] border-cardborder pl-10 text-sm text-heading"
+                />
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={isPending}
-            className="w-full min-h-11 py-2.5 px-4 bg-indigo-800 hover:bg-indigo-900 disabled:opacity-60 text-white font-semibold rounded-lg text-sm transition"
-          >
-            {isPending ? "Memproses..." : "Masuk ke Dashboard"}
-          </button>
-        </form>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-sm font-semibold text-heading">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock
+                  className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  placeholder="Masukkan password admin"
+                  className="min-h-11 rounded-[10px] border-cardborder pl-10 text-sm text-heading"
+                />
+              </div>
+            </div>
 
-        <div className="mt-6 border-t border-slate-200 pt-4 text-center">
+            <Button
+              type="submit"
+              disabled={isPending}
+              className="min-h-11 w-full rounded-[10px] bg-primary text-sm font-semibold text-white shadow-(--shadow-btn) hover:bg-primary-dark"
+            >
+              {isPending ? "Memproses..." : "Masuk ke Dashboard"}
+            </Button>
+          </form>
+        </CardContent>
+
+        <Separator className="bg-soft" />
+        <CardFooter className="justify-center py-4">
           <Link
             href="/"
-            className="inline-flex min-h-11 items-center text-sm font-medium text-indigo-800 hover:underline"
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline"
           >
             Kembali ke Beranda Sekolah
           </Link>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </main>
   );
 }

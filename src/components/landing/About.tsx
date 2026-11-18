@@ -12,6 +12,7 @@ export function About({ siswaCount, connected }: { siswaCount: number; connected
   return (
     <section
       id="tentang"
+      tabIndex={-1}
       className="relative scroll-mt-20 mx-auto max-w-[960px] px-5 py-16 md:px-8 lg:px-12 lg:py-24"
     >
       <ScissorsDoodle className="absolute right-12 top-6 hidden h-12 w-12 lg:block" />
