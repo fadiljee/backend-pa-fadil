@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAdminAction, initialState);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[#faf9f6] px-4 py-8">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
         <div className="flex flex-col items-center mb-6 text-center">
           <div className="w-12 h-12 rounded-xl bg-indigo-800 text-white flex items-center justify-center mb-3">
