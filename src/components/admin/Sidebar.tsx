@@ -13,6 +13,7 @@ import {
   LogOut,
   GraduationCap,
   Menu,
+  Globe,
 } from "lucide-react";
 import { logoutAdminAction } from "@/app/login/actions";
 import { ConfirmActionForm } from "@/components/ui/ConfirmActionForm";
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/admin/kuis", label: "Kuis", icon: HelpCircle },
   { href: "/admin/hasil-kuis", label: "Hasil Kuis", icon: ClipboardCheck },
   { href: "/admin/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/admin/landing", label: "Landing Page", icon: Globe },
 ];
 
 function SidebarContent({

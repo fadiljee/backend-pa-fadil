@@ -14,7 +14,14 @@ const masonryHeights = [
   "aspect-[4/3]",
 ];
 
-export function Gallery({ items }: { items: GalleryItem[] }) {
+interface GalleryProps {
+  items: GalleryItem[];
+  eyebrow: string;
+  title: string;
+  tagline: string;
+}
+
+export function Gallery({ items, eyebrow, title, tagline }: GalleryProps) {
   return (
     <section
       id="galeri"
@@ -26,29 +33,27 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
 
         <div className="relative z-10 text-center">
           <p className="text-[13px] font-bold uppercase tracking-[0.04em] text-sky-100 md:text-[14px]">
-            Galeri
+            {eyebrow}
           </p>
           <h2 className="mt-2 text-[20px] font-bold md:text-[24px] lg:text-[26px]">
-            Kegiatan dan Materi Sekolah.
+            {title}
           </h2>
-          <p className="mt-2 text-sm font-bold tracking-wide text-white">
-            Belajar | Berkarya | Berprestasi
-          </p>
+          {tagline && (
+            <p className="mt-2 text-sm font-bold tracking-wide text-white">
+              {tagline}
+            </p>
+          )}
         </div>
 
         {items.length === 0 ? (
-          <div className="mt-8 columns-2 gap-3 md:gap-4 lg:columns-4">
-            {masonryHeights.map((aspect, idx) => (
-              <div
-                key={idx}
-                className={`mb-3 break-inside-avoid overflow-hidden rounded-xl bg-gradient-to-br from-white/15 to-white/5 p-4 md:mb-4 ${aspect} flex flex-col items-center justify-center text-center`}
-              >
-                <ImageIcon className="h-7 w-7 text-sky-100/80" aria-hidden="true" />
-                <span className="mt-2 text-xs text-sky-100">
-                  [REAL DATA: Foto kegiatan atau materi]
-                </span>
-              </div>
-            ))}
+          <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-6 py-10 text-center">
+            <ImageIcon className="h-8 w-8 text-sky-100" aria-hidden="true" />
+            <p className="mt-3 text-sm font-semibold text-white">
+              Belum ada foto materi yang ditampilkan.
+            </p>
+            <p className="mt-1 text-xs text-sky-100">
+              Unggah gambar pada menu Materi di Panel Admin agar tampil di galeri ini.
+            </p>
           </div>
         ) : (
           <div className="mt-8 columns-2 gap-3 md:gap-4 lg:columns-4">

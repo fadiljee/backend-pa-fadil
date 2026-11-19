@@ -14,10 +14,14 @@ export function Courses({
   materiList,
   connected,
   isLoggedIn,
+  eyebrow,
+  title,
 }: {
   materiList: CourseItem[];
   connected: boolean;
   isLoggedIn: boolean;
+  eyebrow: string;
+  title: string;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -36,10 +40,10 @@ export function Courses({
     >
       <div className="text-center">
         <p className="text-[13px] font-bold uppercase tracking-[0.04em] text-primary md:text-[14px]">
-          Materi
+          {eyebrow}
         </p>
         <h2 className="mt-2 text-[20px] font-bold text-heading md:text-[24px] lg:text-[26px]">
-          Materi Pembelajaran SMPN 1 Merawang.
+          {title}
         </h2>
       </div>
 
@@ -47,8 +51,8 @@ export function Courses({
         <div className="mt-10 rounded-2xl border border-cardborder bg-soft p-8 text-center">
           <p className="text-sm text-body">
             {connected
-              ? "Belum ada materi yang ditambahkan oleh guru."
-              : "[REAL DATA: Daftar materi akan tampil setelah database Supabase terhubung.]"}
+              ? "Belum ada materi yang ditambahkan oleh guru. Tambahkan materi melalui Panel Admin."
+              : "Daftar materi belum dapat dimuat saat ini."}
           </p>
         </div>
       ) : (

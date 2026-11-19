@@ -1,14 +1,30 @@
 import { BookOpen, GraduationCap, MapPin, Users } from "lucide-react";
 import { BrushDoodle, ScissorsDoodle } from "./Doodles";
 
-const features = [
-  { label: "Lingkungan Belajar Aktif", icon: Users, offset: "lg:ml-14" },
-  { label: "Materi Pembelajaran Terbuka", icon: BookOpen, offset: "lg:ml-2" },
-  { label: "Pendampingan Guru Sekolah", icon: GraduationCap, offset: "lg:ml-28" },
-  { label: "SMPN 1 Merawang, Bangka", icon: MapPin, offset: "lg:ml-16" },
-];
+const highlightIcons = [Users, BookOpen, GraduationCap, MapPin];
+const highlightOffsets = ["lg:ml-14", "lg:ml-2", "lg:ml-28", "lg:ml-16"];
 
-export function About({ siswaCount, connected }: { siswaCount: number; connected: boolean }) {
+interface AboutProps {
+  siswaCount: number;
+  connected: boolean;
+  eyebrow: string;
+  title: string;
+  paragraph1: string;
+  paragraph2: string;
+  showStudentCount: boolean;
+  highlights: string[];
+}
+
+export function About({
+  siswaCount,
+  connected,
+  eyebrow,
+  title,
+  paragraph1,
+  paragraph2,
+  showStudentCount,
+  highlights,
+}: AboutProps) {
   return (
     <section
       id="tentang"
@@ -21,45 +37,41 @@ export function About({ siswaCount, connected }: { siswaCount: number; connected
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
         <div>
           <p className="text-[13px] font-bold uppercase tracking-[0.04em] text-primary md:text-[14px]">
-            Tentang Sekolah
+            {eyebrow}
           </p>
           <h2 className="mt-2 text-[20px] font-bold leading-snug text-heading md:text-[24px] lg:text-[26px]">
-            Mengenal SMPN 1 Merawang.
+            {title}
           </h2>
 
           <div className="mt-5 max-w-[448px] space-y-4 text-[14px] leading-[1.8] text-body lg:text-[15px]">
-            <p>
-              SMPN 1 Merawang merupakan sekolah menengah pertama di Kecamatan Merawang yang
-              berkomitmen menghadirkan pembelajaran yang tertib, terarah, dan mudah diakses oleh
-              seluruh siswa.
-            </p>
-            <p>
-              Melalui portal ini, guru dan pengelola sekolah dapat mengelola data siswa serta
-              menyusun materi pembelajaran agar siswa tetap terhubung dengan bahan ajar sekolah.
-            </p>
-            <p>
-              Saat ini tercatat{" "}
-              <strong className="font-bold text-primary">
-                {connected ? `${siswaCount.toLocaleString("id-ID")} siswa` : "[REAL DATA] siswa"}
-              </strong>{" "}
-              aktif yang terdaftar dalam sistem informasi pembelajaran SMPN 1 Merawang.
-            </p>
+            <p>{paragraph1}</p>
+            <p>{paragraph2}</p>
+            {showStudentCount && connected && (
+              <p>
+                Saat ini tercatat{" "}
+                <strong className="font-bold text-primary">
+                  {siswaCount.toLocaleString("id-ID")} siswa
+                </strong>{" "}
+                aktif yang terdaftar dalam sistem informasi pembelajaran sekolah.
+              </p>
+            )}
           </div>
         </div>
 
         <div className="mx-auto flex w-full max-w-[448px] flex-col gap-5 lg:mx-0 lg:max-w-none">
-          {features.map((item) => {
-            const Icon = item.icon;
+          {highlights.map((label, idx) => {
+            const Icon = highlightIcons[idx % highlightIcons.length];
+            const offset = highlightOffsets[idx % highlightOffsets.length];
             return (
               <div
-                key={item.label}
-                className={`flex items-center lg:-rotate-6 ${item.offset}`}
+                key={`${idx}-${label}`}
+                className={`flex items-center lg:-rotate-6 ${offset}`}
               >
                 <span className="relative z-10 flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-full border-4 border-white bg-primary text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)]">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="-ml-5 flex min-h-12 flex-1 items-center rounded-2xl bg-soft py-3 pl-9 pr-5 text-[11px] font-extrabold uppercase italic tracking-wide text-heading shadow-[0_6px_14px_rgba(0,0,0,0.06)] md:text-xs">
-                  {item.label}
+                  {label}
                 </span>
               </div>
             );
