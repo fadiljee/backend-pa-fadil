@@ -65,6 +65,22 @@
   --sidebar-ring: #054e85;
 }
 
+/* Validasi form hanya setelah interaksi pengguna (modern-web-guidance: validate-input-after-interaction) */
+:is(.validated-field:user-invalid) {
+  border-color: #b91c1c;
+  background-color: #fef2f2;
+}
+
+:is(.validated-field:user-valid) {
+  border-color: #15803d;
+}
+
+/* Tunda layout/paint untuk section di bawah fold (modern-web-guidance: defer-rendering-heavy-content) */
+.below-fold-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 480px;
+}
+
 /* Scrollbar tipis bertema sekolah dengan kontras > 3:1 (modern-web-guidance: customize-scrollbar-color-and-thickness) */
 html {
   scrollbar-width: thin;
@@ -151,12 +167,8 @@ body {
   }
 }
 
-/* Scrollspy native dengan fallback class (modern-web-guidance: scrollspy) */
-.scrollspy-nav {
-  scroll-target-group: auto;
-}
-
-.scrollspy-nav a:is(:target-current, .target-current) {
+/* Scrollspy aktif (modern-web-guidance: scrollspy) */
+.scrollspy-nav a:is(.target-current, [aria-current="true"]) {
   color: #054e85;
   font-weight: 700;
   border-bottom-color: #054e85;

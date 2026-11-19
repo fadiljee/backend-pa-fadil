@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
 import { getAdminSession } from "@/lib/auth/admin-session";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
 import { MateriRow } from "@/lib/supabase/types";
 import { getGambarUrl } from "@/lib/storage";
+import { getLandingSettings } from "@/lib/services/landing-settings";
 import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { Courses } from "@/components/landing/Courses";
@@ -9,7 +11,6 @@ import { About } from "@/components/landing/About";
 import { Gallery } from "@/components/landing/Gallery";
 import { Footer } from "@/components/landing/Footer";
 import { FloatingBar } from "@/components/landing/FloatingBar";
-import { Reveal } from "@/components/landing/Reveal";
 
 export const dynamic = "force-dynamic";
 
@@ -20,42 +21,50 @@ interface LandingData {
   materiList: MateriRow[];
 }
 
-async function getLandingData(): Promise<LandingData> {
-  if (!isSupabaseConfigured()) {
-    return {
-      connected: false,
-      siswaCount: 0,
-      materiCount: 0,
-      materiList: [],
-    };
-  }
+const getLandingData = unstable_cache(
+  async (): Promise<LandingData> => {
+    if (!isSupabaseConfigured()) {
+      return {
+        connected: false,
+        siswaCount: 0,
+        materiCount: 0,
+        materiList: [],
+      };
+    }
 
-  try {
-    const supabase = getSupabaseAdmin();
-    const [siswaRes, materiRes, materiListRes] = await Promise.all([
-      supabase.from("data_siswa").select("*", { count: "exact", head: true }),
-      supabase.from("materis").select("*", { count: "exact", head: true }),
-      supabase.from("materis").select("*").order("id", { ascending: true }).limit(9),
-    ]);
+    try {
+      const supabase = getSupabaseAdmin();
+      const [siswaRes, materiRes, materiListRes] = await Promise.all([
+        supabase.from("data_siswa").select("*", { count: "exact", head: true }),
+        supabase.from("materis").select("*", { count: "exact", head: true }),
+        supabase.from("materis").select("*").order("id", { ascending: true }).limit(9),
+      ]);
 
-    return {
-      connected: true,
-      siswaCount: siswaRes.count ?? 0,
-      materiCount: materiRes.count ?? 0,
-      materiList: (materiListRes.data ?? []) as MateriRow[],
-    };
-  } catch {
-    return {
-      connected: false,
-      siswaCount: 0,
-      materiCount: 0,
-      materiList: [],
-    };
-  }
-}
+      return {
+        connected: true,
+        siswaCount: siswaRes.count ?? 0,
+        materiCount: materiRes.count ?? 0,
+        materiList: (materiListRes.data ?? []) as MateriRow[],
+      };
+    } catch {
+      return {
+        connected: false,
+        siswaCount: 0,
+        materiCount: 0,
+        materiList: [],
+      };
+    }
+  },
+  ["landing-data"],
+  { revalidate: 60, tags: ["landing-data"] }
+);
 
 export default async function HomePage() {
-  const [session, data] = await Promise.all([getAdminSession(), getLandingData()]);
+  const [session, data, { settings }] = await Promise.all([
+    getAdminSession(),
+    getLandingData(),
+    getLandingSettings(),
+  ]);
   const isLoggedIn = Boolean(session.isLoggedIn);
 
   const courseItems = data.materiList.map((m) => ({
@@ -77,7 +86,11 @@ export default async function HomePage() {
         Lewati ke konten utama
       </a>
 
-      <Navbar isLoggedIn={isLoggedIn} />
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        schoolName={settings.schoolName}
+        schoolSubtitle={settings.schoolSubtitle}
+      />
 
       <main id="main-content" tabIndex={-1}>
         <Hero
@@ -85,26 +98,56 @@ export default async function HomePage() {
           siswaCount={data.siswaCount}
           materiCount={data.materiCount}
           isLoggedIn={isLoggedIn}
+          title={settings.heroTitle}
+          description={settings.heroDescription}
+          primaryCta={settings.heroPrimaryCta}
+          secondaryCta={settings.heroSecondaryCta}
+          showStats={settings.showStats}
         />
 
-        <Reveal>
-          <Courses
-            materiList={courseItems}
+        <Courses
+          materiList={courseItems}
+          connected={data.connected}
+          isLoggedIn={isLoggedIn}
+          eyebrow={settings.coursesEyebrow}
+          title={settings.coursesTitle}
+        />
+
+        <div className="below-fold-section">
+          <About
+            siswaCount={data.siswaCount}
             connected={data.connected}
-            isLoggedIn={isLoggedIn}
+            eyebrow={settings.aboutEyebrow}
+            title={settings.aboutTitle}
+            paragraph1={settings.aboutParagraph1}
+            paragraph2={settings.aboutParagraph2}
+            showStudentCount={settings.aboutShowStudentCount}
+            highlights={settings.aboutHighlights}
           />
-        </Reveal>
+        </div>
 
-        <Reveal>
-          <About siswaCount={data.siswaCount} connected={data.connected} />
-        </Reveal>
-
-        <Reveal>
-          <Gallery items={galleryItems} />
-        </Reveal>
+        <div className="below-fold-section">
+          <Gallery
+            items={galleryItems}
+            eyebrow={settings.galleryEyebrow}
+            title={settings.galleryTitle}
+            tagline={settings.galleryTagline}
+          />
+        </div>
       </main>
 
-      <Footer isLoggedIn={isLoggedIn} />
+      <div className="below-fold-section">
+        <Footer
+          isLoggedIn={isLoggedIn}
+          schoolName={settings.schoolName}
+          schoolSubtitle={settings.schoolSubtitle}
+          description={settings.footerDescription}
+          contactAddress={settings.contactAddress}
+          contactEmail={settings.contactEmail}
+          contactPhone={settings.contactPhone}
+          copyrightText={settings.copyrightText}
+        />
+      </div>
       <FloatingBar isLoggedIn={isLoggedIn} />
     </div>
   );

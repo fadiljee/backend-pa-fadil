@@ -13,6 +13,8 @@ import {
 
 interface NavbarProps {
   isLoggedIn: boolean;
+  schoolName: string;
+  schoolSubtitle: string;
 }
 
 const navLinks = [
@@ -23,7 +25,7 @@ const navLinks = [
   { href: "#kontak", label: "Kontak" },
 ];
 
-export function Navbar({ isLoggedIn }: NavbarProps) {
+export function Navbar({ isLoggedIn, schoolName, schoolSubtitle }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navListRef = useRef<HTMLUListElement>(null);
@@ -42,18 +44,6 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
     const navList = navListRef.current;
     if (!navList) return;
     const links = Array.from(navList.querySelectorAll<HTMLAnchorElement>("a[href^='#']"));
-
-    if (CSS.supports("scroll-target-group", "auto")) {
-      const syncAriaCurrent = () => {
-        const currentLink = navList.querySelector("a:target-current");
-        links.forEach((link) => {
-          link.setAttribute("aria-current", link === currentLink ? "true" : "false");
-        });
-      };
-      syncAriaCurrent();
-      document.addEventListener("scrollend", syncAriaCurrent);
-      return () => document.removeEventListener("scrollend", syncAriaCurrent);
-    }
 
     const targets = links
       .map((l) => document.getElementById(l.getAttribute("href")?.slice(1) ?? ""))
@@ -94,10 +84,10 @@ export function Navbar({ isLoggedIn }: NavbarProps) {
           </span>
           <span className="flex flex-col">
             <span className="text-[11px] font-medium leading-tight text-muted-foreground">
-              SMPN 1 Merawang
+              {schoolName}
             </span>
             <span className="text-sm font-extrabold leading-tight text-heading">
-              Portal Sekolah
+              {schoolSubtitle}
             </span>
           </span>
         </Link>

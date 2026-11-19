@@ -6,6 +6,11 @@ interface HeroProps {
   siswaCount: number;
   materiCount: number;
   isLoggedIn: boolean;
+  title: string;
+  description: string;
+  primaryCta: string;
+  secondaryCta: string;
+  showStats: boolean;
 }
 
 function HeroBooksIllustration() {
@@ -48,7 +53,17 @@ function HeroBooksIllustration() {
   );
 }
 
-export function Hero({ connected, siswaCount, materiCount, isLoggedIn }: HeroProps) {
+export function Hero({
+  connected,
+  siswaCount,
+  materiCount,
+  isLoggedIn,
+  title,
+  description,
+  primaryCta,
+  secondaryCta,
+  showStats,
+}: HeroProps) {
   return (
     <section
       id="home"
@@ -58,45 +73,46 @@ export function Hero({ connected, siswaCount, materiCount, isLoggedIn }: HeroPro
       <div className="relative z-10 mx-auto grid max-w-[960px] grid-cols-1 items-center gap-10 px-5 md:px-8 lg:grid-cols-2 lg:px-12">
         <div className="text-center lg:text-left">
           <h1 className="text-[28px] font-bold leading-[1.25] text-heading md:text-[36px] lg:text-[40px]">
-            Selamat Datang di SMPN 1 Merawang.
+            {title}
           </h1>
           <p className="mx-auto mt-4 max-w-sm text-[14px] leading-[1.7] text-body lg:mx-0 lg:text-[15px]">
-            Portal informasi sekolah, data siswa aktif, serta akses materi pembelajaran bagi
-            seluruh warga SMPN 1 Merawang.
+            {description}
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
             <a
               href="#materi"
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-primary px-7 py-3 text-[13px] font-semibold text-white shadow-(--shadow-btn) transition duration-180 hover:bg-primary-dark"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-primary px-7 py-3 text-[13px] font-semibold text-white shadow-(--shadow-btn) transition duration-180 hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              Lihat Materi
+              {primaryCta}
             </a>
             <Link
               href={isLoggedIn ? "/admin" : "#tentang"}
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border-[1.5px] border-primary bg-white px-6 py-3 text-[13px] font-semibold text-primary transition duration-180 hover:bg-primary-light"
+              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border-[1.5px] border-primary bg-white px-6 py-3 text-[13px] font-semibold text-primary transition duration-180 hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
-              {isLoggedIn ? "Buka Panel Admin" : "Tentang Sekolah"}
+              {isLoggedIn ? "Buka Panel Admin" : secondaryCta}
             </Link>
           </div>
 
-          <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl border border-cardborder/60 bg-white/90 px-4 py-2.5 text-xs text-body shadow-(--shadow-card) lg:justify-start">
-            <span>
-              <strong className="font-bold text-primary">
-                {connected ? siswaCount.toLocaleString("id-ID") : "[REAL DATA]"}
-              </strong>{" "}
-              Siswa Aktif
-            </span>
-            <span className="text-muted" aria-hidden="true">
-              ·
-            </span>
-            <span>
-              <strong className="font-bold text-heading">
-                {connected ? materiCount.toLocaleString("id-ID") : "-"}
-              </strong>{" "}
-              Materi Aktif
-            </span>
-          </div>
+          {showStats && connected && (
+            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl border border-cardborder/60 bg-white/90 px-4 py-2.5 text-xs text-body shadow-(--shadow-card) lg:justify-start">
+              <span>
+                <strong className="font-bold text-primary">
+                  {siswaCount.toLocaleString("id-ID")}
+                </strong>{" "}
+                Siswa Aktif
+              </span>
+              <span className="text-muted" aria-hidden="true">
+                ·
+              </span>
+              <span>
+                <strong className="font-bold text-heading">
+                  {materiCount.toLocaleString("id-ID")}
+                </strong>{" "}
+                Materi Aktif
+              </span>
+            </div>
+          )}
 
           <GlobeDoodle className="mt-5 hidden h-12 w-12 lg:block" />
         </div>
