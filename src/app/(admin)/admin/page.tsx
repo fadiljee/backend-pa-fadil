@@ -3,6 +3,8 @@ import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { MateriRow } from "@/lib/supabase/types";
 import { computeGelar } from "@/lib/services/learning";
 import { getAggregatedLeaderboard } from "@/lib/services/leaderboard";
+import { getDashboardAnalytics } from "@/lib/services/dashboard-analytics";
+import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, BookOpen, HelpCircle, Trophy } from "lucide-react";
@@ -13,10 +15,10 @@ export default async function AdminDashboardPage() {
   const supabase = getSupabaseAdmin();
 
   const [
-    { count: siswaCount },
-    { count: materiCount },
-    { count: kuisCount },
-    { data: materiTerbaru },
+    { count: siswaCount, error: siswaErr },
+    { count: materiCount, error: materiErr },
+    { count: kuisCount, error: kuisErr },
+    { data: materiTerbaru, error: materiListErr },
     allScores,
   ] = await Promise.all([
     supabase.from("data_siswa").select("*", { count: "exact", head: true }),
@@ -30,29 +32,30 @@ export default async function AdminDashboardPage() {
     getAggregatedLeaderboard(),
   ]);
 
-  const topSiswa = allScores.slice(0, 3);
-
-  let tinggi = 0;
-  let sedang = 0;
-  let rendah = 0;
-  for (const row of allScores) {
-    if (row.totalSkor >= 85) tinggi++;
-    else if (row.totalSkor >= 70) sedang++;
-    else rendah++;
+  if (siswaErr || materiErr || kuisErr || materiListErr) {
+    throw new Error(
+      siswaErr?.message ??
+        materiErr?.message ??
+        kuisErr?.message ??
+        materiListErr?.message ??
+        "Gagal memuat ringkasan data dashboard."
+    );
   }
-  const totalEvaluated = Math.max(allScores.length, 1);
+
+  const analytics = await getDashboardAnalytics(allScores, siswaCount ?? 0);
+  const topSiswa = allScores.slice(0, 3);
 
   return (
     <div className="space-y-6">
       <Card className="border-0 bg-primary text-white shadow-sm">
-        <CardContent className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-2">
+        <CardContent className="flex flex-col gap-4 py-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Dashboard Admin</h1>
-            <p className="text-sky-100 text-sm mt-1">
+            <h1 className="text-balance text-2xl font-bold">Dashboard Admin</h1>
+            <p className="mt-1 text-pretty text-sm text-sky-100">
               Ringkasan aktivitas belajar, materi, dan capaian kuis siswa SMPN 1 Merawang
             </p>
           </div>
-          <Badge className="bg-white/15 text-white border-0 self-start sm:self-auto px-3 py-1.5 text-xs">
+          <Badge className="self-start border-0 bg-white/15 px-3 py-1.5 text-xs text-white sm:self-auto">
             {new Date().toLocaleDateString("id-ID", {
               weekday: "long",
               day: "numeric",
@@ -63,11 +66,11 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         <Card className="border-slate-200">
           <CardContent className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-primary-light text-primary flex items-center justify-center">
-              <Users className="w-6 h-6" aria-hidden="true" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+              <Users className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">{siswaCount ?? 0}</div>
@@ -78,8 +81,8 @@ export default async function AdminDashboardPage() {
 
         <Card className="border-slate-200">
           <CardContent className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
-              <BookOpen className="w-6 h-6" aria-hidden="true" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+              <BookOpen className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">{materiCount ?? 0}</div>
@@ -90,8 +93,8 @@ export default async function AdminDashboardPage() {
 
         <Card className="border-slate-200">
           <CardContent className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-              <HelpCircle className="w-6 h-6" aria-hidden="true" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+              <HelpCircle className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">{kuisCount ?? 0}</div>
@@ -101,90 +104,45 @@ export default async function AdminDashboardPage() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-slate-900">
-              Distribusi Nilai Siswa ({allScores.length} siswa aktif)
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">Nilai ≥ 85</span>
-                <span className="font-semibold text-emerald-700">
-                  {tinggi} siswa ({Math.round((tinggi / totalEvaluated) * 100)}%)
-                </span>
-              </div>
-              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-emerald-600 h-full rounded-full"
-                  style={{ width: `${(tinggi / totalEvaluated) * 100}%` }}
-                />
-              </div>
-            </div>
+      {/* 3 Grafik Analitik Utama (shadcn/ui Charts + Recharts) */}
+      <DashboardCharts data={analytics} />
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">Nilai 70 sampai 84</span>
-                <span className="font-semibold text-amber-700">
-                  {sedang} siswa ({Math.round((sedang / totalEvaluated) * 100)}%)
-                </span>
-              </div>
-              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-amber-600 h-full rounded-full"
-                  style={{ width: `${(sedang / totalEvaluated) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-600">Nilai &lt; 70</span>
-                <span className="font-semibold text-red-700">
-                  {rendah} siswa ({Math.round((rendah / totalEvaluated) * 100)}%)
-                </span>
-              </div>
-              <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                <div
-                  className="bg-red-600 h-full rounded-full"
-                  style={{ width: `${(rendah / totalEvaluated) * 100}%` }}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base font-semibold text-slate-900 flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-amber-600" aria-hidden="true" />
-              Top 3 Peringkat Siswa
+      {/* Ringkasan Operasional: Top 3 Peringkat Siswa & 5 Materi Terbaru */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="min-w-0 border-slate-200">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2 text-base font-semibold text-slate-900">
+              <Trophy className="h-4 w-4 text-amber-600" aria-hidden="true" />
+              <h2>Top 3 Peringkat Siswa</h2>
             </CardTitle>
             <Link
               href="/admin/leaderboard"
-              className="text-xs font-medium text-primary hover:underline"
+              className="inline-flex min-h-11 items-center text-xs font-semibold text-primary hover:underline"
             >
               Lihat semua peringkat
             </Link>
           </CardHeader>
           <CardContent>
             {topSiswa.length === 0 ? (
-              <p className="text-sm text-slate-600">Belum ada data pengerjaan kuis.</p>
+              <p className="text-sm text-slate-600">
+                Belum ada data pengerjaan kuis untuk menyusun peringkat.
+              </p>
             ) : (
               <div className="divide-y divide-slate-100">
                 {topSiswa.map((s, idx) => (
-                  <div key={s.siswaId} className="py-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-slate-900 text-sm">
+                  <div
+                    key={s.siswaId}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="truncate text-sm font-medium text-slate-900">
                         #{idx + 1} {s.nama}
                       </div>
                       <div className="text-xs text-slate-600">
                         Kelas {s.kelas} · {computeGelar(s.totalSkor)}
                       </div>
                     </div>
-                    <Badge className="bg-primary-light text-primary font-bold">
+                    <Badge className="shrink-0 bg-primary-light font-bold text-primary">
                       {s.totalSkor} pts
                     </Badge>
                   </div>
@@ -193,35 +151,42 @@ export default async function AdminDashboardPage() {
             )}
           </CardContent>
         </Card>
-      </div>
 
-      <Card className="border-slate-200">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base font-semibold text-slate-900">5 Materi Terbaru</CardTitle>
-          <Link
-            href="/admin/materi"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            Kelola semua materi
-          </Link>
-        </CardHeader>
-        <CardContent>
-          {!materiTerbaru || materiTerbaru.length === 0 ? (
-            <p className="text-sm text-slate-600">Belum ada materi.</p>
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {(materiTerbaru as MateriRow[]).map((m) => (
-                <li key={m.id} className="py-2.5 flex items-center justify-between text-sm">
-                  <span className="font-medium text-slate-800">{m.judul}</span>
-                  <span className="text-xs text-slate-600">
-                    {new Date(m.created_at).toLocaleDateString("id-ID")}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+        <Card className="min-w-0 border-slate-200">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="text-base font-semibold text-slate-900">
+              <h2>5 Materi Terbaru</h2>
+            </CardTitle>
+            <Link
+              href="/admin/materi"
+              className="inline-flex min-h-11 items-center text-xs font-semibold text-primary hover:underline"
+            >
+              Kelola semua materi
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {!materiTerbaru || materiTerbaru.length === 0 ? (
+              <p className="text-sm text-slate-600">
+                Belum ada materi. Tambahkan materi baru melalui halaman Kelola Materi.
+              </p>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {(materiTerbaru as MateriRow[]).map((m) => (
+                  <li
+                    key={m.id}
+                    className="flex items-center justify-between gap-3 py-2.5 text-sm"
+                  >
+                    <span className="truncate font-medium text-slate-800">{m.judul}</span>
+                    <span className="shrink-0 text-xs text-slate-600">
+                      {new Date(m.created_at).toLocaleDateString("id-ID")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
