@@ -20,8 +20,16 @@
   --color-accent-blue: #8ec5f0;
   --color-accent-pink: #f7b6cf;
   --color-accent-yellow: #f6d45b;
+  --color-crimson: #7b1113;
+  --color-crimson-dark: #580b0e;
+  --color-crimson-light: #fdf2f2;
+  --color-gold: #c89b3c;
+  --color-gold-light: #fde8c8;
+  --color-ivory: #faf8f6;
+  --color-ink: #1f242c;
 
-  --font-sans: var(--font-noto), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-open-sans), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-poppins), system-ui, -apple-system, sans-serif;
 
   --shadow-card: 0 6px 18px rgba(20, 40, 80, 0.06);
   --shadow-card-active: 0 10px 24px rgba(5, 78, 133, 0.3);
@@ -29,8 +37,6 @@
 }
 
 :root {
-  --scrollbar-thumb: #054e85;
-  --scrollbar-track: #e6eff7;
   --background: #ffffff;
   --foreground: #1b2433;
   --card: #ffffff;
@@ -81,26 +87,16 @@
   contain-intrinsic-size: auto none auto 480px;
 }
 
-/* Scrollbar tipis bertema sekolah dengan kontras > 3:1 (modern-web-guidance: customize-scrollbar-color-and-thickness) */
-html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+/* Sembunyikan scrollbar tanpa mematikan fungsi scroll (modern-web-guidance: customize-scrollbar-color-and-thickness) */
+html,
+body {
+  scrollbar-width: none;
 }
 
-@supports not (scrollbar-color: auto) {
-  html {
-    scrollbar-width: auto;
-  }
-  html::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  html::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
-    border-radius: 9999px;
-  }
-  html::-webkit-scrollbar-track {
-    background: var(--scrollbar-track);
+@supports not (scrollbar-width: none) {
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
   }
 }
 
@@ -145,33 +141,21 @@ body {
   html {
     @apply font-sans;
   }
-}
-
-/* Scroll-driven progress bar di bawah navbar (modern-web-guidance: motion) */
-@keyframes scroll-progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-@supports (animation-timeline: scroll()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .scroll-progress-bar {
-      transform-origin: left center;
-      animation: scroll-progress linear both;
-      animation-timeline: scroll(root block);
-    }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
   }
 }
 
 /* Scrollspy aktif (modern-web-guidance: scrollspy) */
-.scrollspy-nav a:is(.target-current, [aria-current="true"]) {
-  color: #054e85;
+.scrollspy-nav :is(a, button):is(.target-current, [aria-current="true"]) {
+  color: #7b1113;
   font-weight: 700;
-  border-bottom-color: #054e85;
+  border-bottom-color: #7b1113;
 }
 
 /* Animasi masuk/keluar native <dialog> & ::backdrop (modern-web-guidance: animate-to-from-top-layer) */
@@ -249,9 +233,113 @@ dialog[open]::backdrop {
   scrollbar-width: none;
 }
 
+/* Native swipeable <dialog> navigation drawer (modern-web-guidance: navigation-drawer) */
+@property --drawer-backdrop {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+dialog.nav-drawer {
+  --drawer-width: min(20rem, 82dvw, calc(100dvw - 24px));
+  --drawer-backdrop: 0;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  overflow: visible;
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+dialog.nav-drawer[open] {
+  opacity: 1;
+  transform: none;
+}
+
+dialog.nav-drawer::backdrop {
+  background: #0f172a;
+  opacity: calc(var(--drawer-backdrop) * 0.48);
+  transition: none;
+}
+
+.nav-drawer-scroller {
+  position: relative;
+  display: grid;
+  grid-template-columns: 100% var(--drawer-width);
+  overflow-x: auto;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+}
+
+.nav-drawer-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-drawer-scroller {
+    scroll-behavior: smooth;
+  }
+}
+
+.nav-drawer-scroller::before {
+  content: "";
+  scroll-snap-align: start;
+  scroll-initial-target: nearest;
+}
+
+.nav-drawer-sheet {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100svh;
+  overflow-y: auto;
+  scroll-snap-align: end;
+  scrollbar-width: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  dialog.nav-drawer {
+    timeline-scope: --nav-drawer-fade;
+    animation: fade-nav-drawer-backdrop linear both;
+    animation-timeline: --nav-drawer-fade;
+  }
+
+  .nav-drawer-scroller {
+    scroll-timeline: --nav-drawer-fade x;
+  }
+
+  @keyframes fade-nav-drawer-backdrop {
+    0% {
+      --drawer-backdrop: 0;
+    }
+    100% {
+      --drawer-backdrop: 1;
+    }
+  }
+}
+
+/* Carousel track scroll containment & reduced-motion smooth scroll (modern-web-guidance: carousel) */
+.carousel-track {
+  overscroll-behavior-x: contain;
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .carousel-track {
+    scroll-behavior: smooth;
+  }
+}
+
 @theme inline {
-  --font-heading: var(--font-noto), system-ui, -apple-system, sans-serif;
-  --font-sans: var(--font-noto), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-poppins), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-open-sans), system-ui, -apple-system, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

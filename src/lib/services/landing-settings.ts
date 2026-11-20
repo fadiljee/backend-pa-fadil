@@ -21,6 +21,11 @@ export const landingSettingsSchema = z.object({
     .array(z.string().trim().min(2, "Poin keunggulan minimal 2 karakter").max(60))
     .min(1, "Minimal 1 poin keunggulan")
     .max(4, "Maksimal 4 poin keunggulan"),
+  schoolVision: z.string().trim().min(10, "Visi sekolah minimal 10 karakter").max(320),
+  schoolMissions: z
+    .array(z.string().trim().min(5, "Poin misi minimal 5 karakter").max(200))
+    .min(1, "Minimal 1 poin misi")
+    .max(6, "Maksimal 6 poin misi"),
   galleryEyebrow: z.string().trim().min(2, "Label section galeri minimal 2 karakter").max(40),
   galleryTitle: z.string().trim().min(4, "Judul section galeri minimal 4 karakter").max(120),
   galleryTagline: z.string().trim().max(100),
@@ -40,34 +45,42 @@ export type LandingSettings = z.infer<typeof landingSettingsSchema>;
 
 export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
   schoolName: "SMPN 1 Merawang",
-  schoolSubtitle: "Portal Sekolah",
-  heroTitle: "Selamat Datang di SMPN 1 Merawang.",
+  schoolSubtitle: "Profil Sekolah",
+  heroTitle: "SMPN 1 Merawang, Membentuk Generasi Berkarakter dan Berprestasi.",
   heroDescription:
-    "Portal informasi sekolah, data siswa aktif, serta akses materi pembelajaran bagi seluruh warga SMPN 1 Merawang.",
-  heroPrimaryCta: "Lihat Materi",
-  heroSecondaryCta: "Tentang Sekolah",
+    "Website profil resmi SMPN 1 Merawang. Kenali profil sekolah, visi dan misi, berita kegiatan terbaru, serta akses materi pembelajaran siswa.",
+  heroPrimaryCta: "Profil Sekolah",
+  heroSecondaryCta: "Berita Kegiatan",
   showStats: true,
-  coursesEyebrow: "Materi",
-  coursesTitle: "Materi Pembelajaran SMPN 1 Merawang.",
-  aboutEyebrow: "Tentang Sekolah",
+  coursesEyebrow: "Materi Pembelajaran",
+  coursesTitle: "Bahan Ajar SMPN 1 Merawang.",
+  aboutEyebrow: "Profil Sekolah",
   aboutTitle: "Mengenal SMPN 1 Merawang.",
   aboutParagraph1:
-    "SMPN 1 Merawang merupakan sekolah menengah pertama di Kecamatan Merawang yang berkomitmen menghadirkan pembelajaran yang tertib, terarah, dan mudah diakses oleh seluruh siswa.",
+    "SMPN 1 Merawang merupakan sekolah menengah pertama negeri di Kecamatan Merawang, Kabupaten Bangka, yang berkomitmen menyelenggarakan pendidikan berkualitas dengan lingkungan belajar yang tertib, aman, dan ramah bagi seluruh peserta didik.",
   aboutParagraph2:
-    "Melalui portal ini, guru dan pengelola sekolah dapat mengelola data siswa serta menyusun materi pembelajaran agar siswa tetap terhubung dengan bahan ajar sekolah.",
+    "Bersama tenaga pendidik yang berdedikasi, sekolah mengembangkan keseimbangan antara capaian akademik, pembinaan karakter, dan kegiatan kesiswaan agar siswa siap melanjutkan ke jenjang pendidikan berikutnya.",
   aboutShowStudentCount: true,
   aboutHighlights: [
     "Lingkungan Belajar Aktif",
-    "Materi Pembelajaran Terbuka",
+    "Pembinaan Karakter Siswa",
     "Pendampingan Guru Sekolah",
-    "SMPN 1 Merawang, Bangka",
+    "Kecamatan Merawang, Bangka",
   ],
-  galleryEyebrow: "Galeri",
-  galleryTitle: "Kegiatan dan Materi Sekolah.",
+  schoolVision:
+    "Terwujudnya peserta didik SMPN 1 Merawang yang beriman, berakhlak mulia, disiplin, berprestasi dalam akademik maupun non-akademik, serta peduli terhadap lingkungan.",
+  schoolMissions: [
+    "Menyelenggarakan pembelajaran yang aktif, terarah, dan mendorong rasa ingin tahu siswa.",
+    "Menanamkan nilai keimanan, kejujuran, tanggung jawab, dan disiplin dalam keseharian sekolah.",
+    "Mengembangkan minat dan bakat peserta didik melalui kegiatan ekstrakurikuler serta pembinaan prestasi.",
+    "Membangun kerja sama yang harmonis antara sekolah, orang tua, dan masyarakat Kecamatan Merawang.",
+  ],
+  galleryEyebrow: "Galeri Sekolah",
+  galleryTitle: "Dokumentasi Kegiatan dan Pembelajaran.",
   galleryTagline: "Belajar | Berkarya | Berprestasi",
   footerDescription:
-    "Portal informasi resmi, data siswa aktif, dan materi pembelajaran SMPN 1 Merawang.",
-  contactAddress: "Kecamatan Merawang, Kabupaten Bangka",
+    "Portal profil resmi SMPN 1 Merawang, memuat informasi sekolah, berita kegiatan, serta materi pembelajaran siswa.",
+  contactAddress: "Kecamatan Merawang, Kabupaten Bangka, Kepulauan Bangka Belitung",
   contactEmail: "",
   contactPhone: "",
   copyrightText: "© 2026 SMPN 1 Merawang. All rights reserved.",

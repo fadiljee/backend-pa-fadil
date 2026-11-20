@@ -3,6 +3,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { getAdminSession } from "@/lib/auth/admin-session";
 import {
+  DEFAULT_LANDING_SETTINGS,
   landingSettingsSchema,
   saveLandingSettings,
 } from "@/lib/services/landing-settings";
@@ -48,6 +49,16 @@ export async function updateLandingSettingsAction(
     aboutParagraph2: String(formData.get("aboutParagraph2") ?? ""),
     aboutShowStudentCount: formData.get("aboutShowStudentCount") === "on",
     aboutHighlights: highlightsRaw,
+    schoolVision:
+      String(formData.get("schoolVision") ?? "").trim() ||
+      DEFAULT_LANDING_SETTINGS.schoolVision,
+    schoolMissions: (() => {
+      const raw = String(formData.get("schoolMissions") ?? "")
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+      return raw.length > 0 ? raw : DEFAULT_LANDING_SETTINGS.schoolMissions;
+    })(),
     galleryEyebrow: String(formData.get("galleryEyebrow") ?? ""),
     galleryTitle: String(formData.get("galleryTitle") ?? ""),
     galleryTagline: String(formData.get("galleryTagline") ?? ""),

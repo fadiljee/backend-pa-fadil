@@ -1,148 +1,139 @@
-import Link from "next/link";
-import { GlobeDoodle, SpiralPaperDoodle } from "./Doodles";
+import { Award, BookOpen, ShieldCheck, Users } from "lucide-react";
+import { EnquiryForm } from "./EnquiryForm";
+import { SectionButton } from "./SectionLink";
 
 interface HeroProps {
-  connected: boolean;
-  siswaCount: number;
-  materiCount: number;
-  isLoggedIn: boolean;
+  schoolName: string;
   title: string;
   description: string;
   primaryCta: string;
   secondaryCta: string;
-  showStats: boolean;
+  highlights: string[];
+  heroPhotoUrl?: string | null;
 }
 
-function HeroBooksIllustration() {
-  return (
-    <svg
-      viewBox="0 0 460 380"
-      className="mx-auto h-auto w-[78%] max-w-[300px] lg:ml-auto lg:mr-0 lg:w-full lg:max-w-[460px]"
-      role="img"
-      aria-label="Ilustrasi tumpukan empat buku matematika dan topi toga akademik"
-    >
-      <ellipse cx="235" cy="342" rx="165" ry="22" fill="#D9E2EC" />
+const highlightIcons = [BookOpen, Users, Award, ShieldCheck];
 
-      {/* Buku merah (bawah) */}
-      <polygon points="94,274 260,214 368,260 202,322" fill="#C53030" />
-      <polygon points="94,274 202,322 202,342 94,294" fill="#9B2C2C" />
-      <polygon points="202,322 368,260 368,280 202,342" fill="#F8FAFC" />
-
-      {/* Buku biru */}
-      <polygon points="112,232 270,174 362,216 204,276" fill="#054E85" />
-      <polygon points="112,232 204,276 204,296 112,252" fill="#043B66" />
-      <polygon points="204,276 362,216 362,236 204,296" fill="#F1F5F9" />
-
-      {/* Buku hijau tua */}
-      <polygon points="128,192 274,136 352,174 206,230" fill="#276749" />
-      <polygon points="128,192 206,230 206,248 128,210" fill="#22543D" />
-      <polygon points="206,230 352,174 352,192 206,248" fill="#F8FAFC" />
-
-      {/* Buku oranye */}
-      <polygon points="142,152 278,98 344,134 208,188" fill="#DD6B20" />
-      <polygon points="142,152 208,188 208,204 142,168" fill="#C05621" />
-      <polygon points="208,188 344,134 344,150 208,204" fill="#FEF3C7" />
-
-      {/* Topi toga hitam bertali kuning */}
-      <path d="M186,102 L186,134 C186,144 276,144 276,134 L276,102 Z" fill="#1B2433" />
-      <polygon points="126,82 231,38 336,82 231,124" fill="#2D3748" />
-      <circle cx="231" cy="82" r="5" fill="#F6D45B" />
-      <path d="M231,82 L306,112 L306,156" stroke="#F6D45B" strokeWidth="4.5" fill="none" />
-      <circle cx="306" cy="160" r="6" fill="#F6D45B" />
-    </svg>
-  );
+function splitTwoToneTitle(rawTitle: string): { lead: string; accent: string } {
+  const clean = rawTitle.trim();
+  const commaIdx = clean.indexOf(",");
+  if (commaIdx > 0 && commaIdx < clean.length - 4) {
+    return {
+      lead: clean.slice(0, commaIdx + 1),
+      accent: clean.slice(commaIdx + 1).trim(),
+    };
+  }
+  const words = clean.split(/\s+/);
+  if (words.length <= 2) {
+    return { lead: words[0] ?? clean, accent: words.slice(1).join(" ") };
+  }
+  const splitAt = Math.ceil(words.length / 2);
+  return {
+    lead: words.slice(0, splitAt).join(" "),
+    accent: words.slice(splitAt).join(" "),
+  };
 }
 
 export function Hero({
-  connected,
-  siswaCount,
-  materiCount,
-  isLoggedIn,
+  schoolName,
   title,
   description,
   primaryCta,
   secondaryCta,
-  showStats,
+  highlights,
+  heroPhotoUrl,
 }: HeroProps) {
+  const { lead, accent } = splitTwoToneTitle(title);
+
   return (
     <section
       id="home"
       tabIndex={-1}
-      className="relative overflow-hidden bg-gradient-to-b from-hero-from to-hero-to pb-28 pt-10 md:pb-36 lg:min-h-[580px] lg:pb-44 lg:pt-14"
+      className="relative w-full overflow-hidden border-b border-slate-200/80 bg-[#F7F3EE]"
     >
-      <div className="relative z-10 mx-auto grid max-w-[960px] grid-cols-1 items-center gap-10 px-5 md:px-8 lg:grid-cols-2 lg:px-12">
-        <div className="text-center lg:text-left">
-          <h1 className="text-[28px] font-bold leading-[1.25] text-heading md:text-[36px] lg:text-[40px]">
-            {title}
-          </h1>
-          <p className="mx-auto mt-4 max-w-sm text-[14px] leading-[1.7] text-body lg:mx-0 lg:text-[15px]">
-            {description}
-          </p>
+      {/* Optional real school backdrop photo with guaranteed high-contrast scrim on left */}
+      {heroPhotoUrl && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <img
+            src={heroPhotoUrl}
+            alt=""
+            width={1440}
+            height={680}
+            fetchPriority="high"
+            className="h-full w-full object-cover object-center opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F3] via-[#FAF7F3]/92 to-[#FAF7F3]/65" />
+        </div>
+      )}
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-            <a
-              href="#materi"
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] bg-primary px-7 py-3 text-[13px] font-semibold text-white shadow-(--shadow-btn) transition duration-180 hover:bg-primary-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              {primaryCta}
-            </a>
-            <Link
-              href={isLoggedIn ? "/admin" : "#tentang"}
-              className="inline-flex min-h-11 items-center justify-center rounded-[10px] border-[1.5px] border-primary bg-white px-6 py-3 text-[13px] font-semibold text-primary transition duration-180 hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              {isLoggedIn ? "Buka Panel Admin" : secondaryCta}
-            </Link>
+      {!heroPhotoUrl && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#FAF7F3] via-white to-[#F2E7E2]"
+        />
+      )}
+
+      <div className="relative z-10 mx-auto w-full max-w-[1360px] px-4 py-10 sm:px-6 sm:py-14 md:px-10 lg:px-14 lg:py-16">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-10">
+          {/* Left 7 cols: Eyebrow, Two-Tone H1, Subtitle, 2 CTAs, Bottom Icon Strip */}
+          <div className="lg:col-span-7">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-ink/80">
+              {schoolName}
+            </p>
+            <h1 className="mt-2.5 text-[clamp(2rem,1.4rem+2.5vw,3.4rem)] font-extrabold leading-[1.12] tracking-tight text-ink">
+              <span>{lead}</span>
+              {accent && (
+                <>
+                  {" "}
+                  <span className="text-crimson">{accent}</span>
+                </>
+              )}
+            </h1>
+            <p className="mt-4 max-w-[50ch] text-[15px] leading-[1.75] text-body sm:text-base">
+              {description}
+            </p>
+
+            <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <SectionButton
+                targetId="profil"
+                className="inline-flex min-h-12 items-center justify-center rounded-md bg-crimson px-7 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition hover:bg-crimson-dark active:scale-[0.98]"
+              >
+                {primaryCta}
+              </SectionButton>
+              <SectionButton
+                targetId="lokasi"
+                className="inline-flex min-h-12 items-center justify-center rounded-md border-[1.5px] border-ink/30 bg-white px-7 text-xs font-bold uppercase tracking-wider text-ink transition hover:border-crimson hover:bg-crimson-light hover:text-crimson active:scale-[0.98]"
+              >
+                {secondaryCta}
+              </SectionButton>
+            </div>
+
+            {/* Bottom 4-icon horizontal strip matching reference */}
+            <div className="mt-9 grid grid-cols-2 gap-4 rounded-xl border border-slate-200/80 bg-white/85 p-4 sm:grid-cols-4 sm:p-5">
+              {highlights.slice(0, 4).map((label, idx) => {
+                const Icon = highlightIcons[idx % highlightIcons.length];
+                return (
+                  <div
+                    key={`${idx}-${label}`}
+                    className="flex flex-col items-center gap-2 text-center"
+                  >
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full border border-crimson/20 bg-crimson-light text-crimson">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <span className="text-xs font-semibold leading-snug text-ink">
+                      {label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          {showStats && connected && (
-            <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-5 gap-y-2 rounded-2xl border border-cardborder/60 bg-white/90 px-4 py-2.5 text-xs text-body shadow-(--shadow-card) lg:justify-start">
-              <span>
-                <strong className="font-bold text-primary">
-                  {siswaCount.toLocaleString("id-ID")}
-                </strong>{" "}
-                Siswa Aktif
-              </span>
-              <span className="text-muted" aria-hidden="true">
-                ·
-              </span>
-              <span>
-                <strong className="font-bold text-heading">
-                  {materiCount.toLocaleString("id-ID")}
-                </strong>{" "}
-                Materi Aktif
-              </span>
-            </div>
-          )}
-
-          <GlobeDoodle className="mt-5 hidden h-12 w-12 lg:block" />
+          {/* Right 5 cols: Floating Crimson-Header Enquiry Form (matches reference ENQUIRE NOW card) */}
+          <div className="lg:col-span-5">
+            <EnquiryForm className="mx-auto max-w-md lg:ml-auto lg:mr-0" />
+          </div>
         </div>
-
-        <div className="relative">
-          <HeroBooksIllustration />
-          <SpiralPaperDoodle className="absolute -bottom-8 left-8 hidden h-12 w-12 lg:block" />
-        </div>
-      </div>
-
-      {/* Dua lapis SVG gelombang putih di dasar hero */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden leading-none"
-        aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 1440 150"
-          preserveAspectRatio="none"
-          className="h-[90px] w-full md:h-[120px] lg:h-[150px]"
-        >
-          <path
-            d="M0,64 C320,136 1080,0 1440,76 L1440,150 L0,150 Z"
-            fill="#FFFFFF"
-            fillOpacity="0.55"
-          />
-          <path
-            d="M0,92 C420,154 1020,24 1440,96 L1440,150 L0,150 Z"
-            fill="#FFFFFF"
-          />
-        </svg>
       </div>
     </section>
   );
