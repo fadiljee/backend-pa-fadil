@@ -469,6 +469,36 @@ export function LandingSettingsForm({
               </div>
             ))}
           </div>
+
+          <div className="space-y-1.5 border-t border-slate-100 pt-4">
+            <Label htmlFor="schoolVision" className="text-sm font-semibold text-slate-800">
+              Visi Sekolah
+            </Label>
+            <Textarea
+              id="schoolVision"
+              name="schoolVision"
+              required
+              minLength={10}
+              maxLength={320}
+              rows={3}
+              defaultValue={initialSettings.schoolVision}
+              className="validated-field"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="schoolMissions" className="text-sm font-semibold text-slate-800">
+              Misi Sekolah (1 baris = 1 poin, maks. 6 poin)
+            </Label>
+            <Textarea
+              id="schoolMissions"
+              name="schoolMissions"
+              required
+              rows={5}
+              defaultValue={initialSettings.schoolMissions.join("\n")}
+              className="validated-field"
+            />
+          </div>
         </CardContent>
       </Card>
 

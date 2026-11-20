@@ -73,3 +73,16 @@ export interface SiswaTokenRow {
   last_used_at: string | null;
   expires_at: string | null;
 }
+
+export interface BeritaRow {
+  id: number;
+  judul: string;
+  ringkasan: string;
+  konten: string;
+  kategori: string;
+  tanggal_kegiatan: string;
+  gambar: string | null;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+}

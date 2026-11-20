@@ -13,6 +13,8 @@ import {
   LogOut,
   GraduationCap,
   Globe,
+  Newspaper,
+  Inbox,
   PanelLeftClose,
   X,
 } from "lucide-react";
@@ -45,6 +47,8 @@ const navItems = [
   { href: "/admin/kuis", label: "Kuis", icon: HelpCircle },
   { href: "/admin/hasil-kuis", label: "Hasil Kuis", icon: ClipboardCheck },
   { href: "/admin/leaderboard", label: "Leaderboard", icon: Trophy },
+  { href: "/admin/berita", label: "Berita & Kegiatan", icon: Newspaper },
+  { href: "/admin/pesan", label: "Pesan Masuk", icon: Inbox },
   { href: "/admin/landing", label: "Landing Page", icon: Globe },
 ];
 

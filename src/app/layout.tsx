@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { Noto_Sans } from "next/font/google";
+import { Open_Sans, Poppins } from "next/font/google";
 import "./globals.css";
 
-const notoSans = Noto_Sans({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-noto",
+  weight: ["600", "700", "800"],
+  variable: "--font-poppins",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-open-sans",
 });
 
 export const metadata: Metadata = {
-  title: "SMPN 1 Merawang | Portal Informasi Sekolah",
+  title: "SMPN 1 Merawang | Profil Sekolah & Berita Kegiatan",
   description:
-    "Portal informasi resmi SMPN 1 Merawang, profil sekolah, data siswa aktif, dan materi pembelajaran.",
+    "Website profil resmi SMPN 1 Merawang, memuat profil sekolah, visi dan misi, berita kegiatan, materi pembelajaran, serta lokasi sekolah.",
 };
 
 export default function RootLayout({
@@ -20,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={notoSans.variable}>
-      <body className="min-h-screen overflow-x-hidden font-sans antialiased">{children}</body>
+    <html lang="id" className={`${poppins.variable} ${openSans.variable}`}>
+      <body className="min-h-dvh overflow-x-clip font-sans antialiased">{children}</body>
     </html>
   );
 }
