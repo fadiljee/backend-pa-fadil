@@ -1,6 +1,7 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/auth/admin-session";
-import { Sidebar } from "@/components/admin/Sidebar";
+import { AdminShell } from "@/components/admin/Sidebar";
 
 export default async function AdminLayout({
   children,
@@ -12,18 +13,13 @@ export default async function AdminLayout({
     redirect("/login");
   }
 
+  const cookieStore = await cookies();
+  const sidebarCookie = cookieStore.get("sidebar_state")?.value;
+  const defaultOpen = sidebarCookie === undefined ? true : sidebarCookie === "true";
+
   return (
-    <div className="min-h-screen bg-slate-50 md:flex">
-      <a
-        href="#admin-main"
-        className="sr-only focus:not-sr-only fixed left-3 top-3 z-50 rounded-lg bg-sky-900 px-4 py-2 text-sm font-semibold text-white shadow-md"
-      >
-        Lewati ke konten utama
-      </a>
-      <Sidebar adminName={session.nama ?? "Admin"} />
-      <main id="admin-main" tabIndex={-1} className="min-w-0 flex-1 p-4 sm:p-6 md:p-8">
-        {children}
-      </main>
-    </div>
+    <AdminShell adminName={session.nama ?? "Admin"} defaultOpen={defaultOpen}>
+      {children}
+    </AdminShell>
   );
 }
