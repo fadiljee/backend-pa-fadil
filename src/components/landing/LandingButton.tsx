@@ -8,11 +8,11 @@ type ButtonVariant = "primary" | "primary-sm" | "white";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "inline-flex min-h-[44px] items-center justify-center rounded-full bg-brand px-7 py-3 text-[13px] md:text-sm font-semibold text-white transition duration-200 hover:-translate-y-px hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30",
+    "inline-flex min-h-[44px] items-center justify-center rounded-full bg-brand px-7 py-3 text-[13px] md:text-sm font-semibold text-white shadow-xs transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30",
   "primary-sm":
-    "inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center rounded-full bg-brand px-5 py-2 text-[13px] font-semibold text-white transition duration-200 hover:-translate-y-px hover:bg-brand-dark focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30",
+    "inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center rounded-full bg-brand px-5 py-2 text-[13px] font-semibold text-white transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30",
   white:
-    "inline-flex min-h-[44px] items-center justify-center rounded-full bg-white px-7 py-3 text-[13px] md:text-sm font-semibold text-brand transition duration-200 hover:-translate-y-px hover:bg-brand-light focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40",
+    "inline-flex min-h-[44px] items-center justify-center rounded-full bg-white px-7 py-3 text-[13px] md:text-sm font-semibold text-brand shadow-xs transition-[transform,background-color,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-brand-light hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40",
 };
 
 interface LandingButtonProps {

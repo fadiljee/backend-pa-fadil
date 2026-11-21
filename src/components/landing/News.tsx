@@ -22,12 +22,14 @@ export function News({ items }: NewsProps) {
       <Confetti variant="white" preset="news" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1200px] px-5 md:px-8 lg:px-12">
-        <SectionTitle title="Berita & Kegiatan" showTriangleIcon />
+        <Reveal>
+          <SectionTitle title="Berita & Kegiatan" showTriangleIcon />
+        </Reveal>
 
         <div className="mt-10 grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
           {displayItems.map((item, idx) => (
-            <Reveal key={item.id} delayMs={idx * 80} className="h-full">
-              <article className="group flex h-full flex-col overflow-hidden rounded-[12px] bg-surface shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition duration-300 hover:shadow-[0_14px_32px_rgba(0,0,0,0.12)]">
+            <Reveal key={item.id} delayMs={idx * 100} className="h-full">
+              <article className="group flex h-full flex-col overflow-hidden rounded-[12px] bg-surface shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:shadow-[0_16px_36px_rgba(0,0,0,0.12)] motion-reduce:transition-none">
                 {/* Top 16:10 photo with rounded top & zoom hover */}
                 <Link
                   href={item.href}
@@ -40,7 +42,7 @@ export function News({ items }: NewsProps) {
                       loading="lazy"
                       width={800}
                       height={500}
-                      className="h-full w-full object-cover transition duration-400 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] motion-reduce:transition-none"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">

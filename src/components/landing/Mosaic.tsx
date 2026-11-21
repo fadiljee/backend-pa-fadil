@@ -48,7 +48,7 @@ function MosaicTile({
           loading="lazy"
           width={900}
           height={600}
-          className="h-full w-full object-cover transition duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
+          className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] motion-reduce:transition-none"
         />
       ) : (
         <div
@@ -78,30 +78,36 @@ export function Mosaic({ slots }: MosaicProps) {
       className="scroll-mt-[88px] w-full bg-surface py-16 md:py-[88px] lg:py-[112px]"
     >
       <div className="mx-auto w-full max-w-[1200px] px-5 md:px-8 lg:px-12">
-        <Reveal>
           {/* Mobile (<640): 2-col masonry · Tablet (640-1023): 3-col masonry */}
           <div className="columns-2 gap-3 sm:columns-3 sm:gap-4 lg:hidden">
             {visibleSlots.map((slot, idx) => (
-              <div key={slot.id} className="mb-3 break-inside-avoid sm:mb-4">
+              <Reveal
+                key={slot.id}
+                variant="scale"
+                delayMs={idx * 55}
+                className="mb-3 break-inside-avoid sm:mb-4"
+              >
                 <MosaicTile
                   slot={slot}
                   className={`w-full ${MOBILE_ASPECT_CLASSES[idx % MOBILE_ASPECT_CLASSES.length]}`}
                 />
-              </div>
+              </Reveal>
             ))}
           </div>
 
-          {/* Desktop (>=1024): Exact 12-column irregular grid */}
+          {/* Desktop (>=1024): Exact 12-column irregular grid with staggered scale-reveal */}
           <div className="hidden lg:grid lg:grid-cols-12 lg:gap-4">
             {visibleSlots.map((slot, idx) => (
-              <MosaicTile
+              <Reveal
                 key={slot.id}
-                slot={slot}
+                variant="scale"
+                delayMs={idx * 65}
                 className={DESKTOP_SLOT_CLASSES[idx] ?? "lg:col-span-3 lg:h-[172px]"}
-              />
+              >
+                <MosaicTile slot={slot} className="h-full w-full" />
+              </Reveal>
             ))}
           </div>
-        </Reveal>
       </div>
     </section>
   );

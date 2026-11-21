@@ -115,24 +115,38 @@ export function Stats({ items }: StatsProps) {
       <Confetti variant="red" preset="stats" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1200px] px-5 text-center md:px-8 lg:px-12">
-        <div className="mx-auto flex justify-center">
-          <GraduationCap
-            className="h-14 w-14 text-white"
-            strokeWidth={1.6}
-            aria-hidden="true"
+        <div
+          className={`transition-[transform,opacity] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+        >
+          <div className="mx-auto flex justify-center">
+            <GraduationCap
+              className="h-14 w-14 text-white"
+              strokeWidth={1.6}
+              aria-hidden="true"
+            />
+          </div>
+
+          <SectionTitle
+            tone="light"
+            title={STATS_HEADER.title}
+            subtitle={STATS_HEADER.subtitle}
+            className="mt-3"
           />
         </div>
 
-        <SectionTitle
-          tone="light"
-          title={STATS_HEADER.title}
-          subtitle={STATS_HEADER.subtitle}
-          className="mt-3"
-        />
-
         <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {items.map((item) => (
-            <div key={item.id} className="flex flex-col items-center text-center">
+          {items.map((item, idx) => (
+            <div
+              key={item.id}
+              style={visible ? { transitionDelay: `${100 + idx * 90}ms` } : undefined}
+              className={`flex flex-col items-center text-center transition-[transform,opacity] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                visible
+                  ? "translate-y-0 scale-100 opacity-100"
+                  : "translate-y-5 scale-[0.95] opacity-0"
+              }`}
+            >
               <StatIcon type={item.icon} />
               <p className="mt-4 text-[36px] font-bold leading-none text-white md:text-[44px] lg:text-[52px]">
                 <CountUpValue

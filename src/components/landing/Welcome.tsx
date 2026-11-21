@@ -14,11 +14,15 @@ export function Welcome() {
       <Confetti variant="white" preset="welcome" />
 
       <div className="relative z-10 mx-auto w-full max-w-[880px] px-5 text-center md:px-8">
-        <Reveal>
+        <Reveal delayMs={0}>
           <SectionTitle as="h1" title={WELCOME_CONTENT.title} />
+        </Reveal>
+        <Reveal delayMs={100}>
           <p className="mt-5 text-sm leading-[1.7] text-body md:text-[15px] lg:text-base lg:leading-[1.75]">
             {WELCOME_CONTENT.paragraph}
           </p>
+        </Reveal>
+        <Reveal delayMs={180}>
           <div className="mt-7 flex justify-center">
             <LandingButton
               variant="primary"

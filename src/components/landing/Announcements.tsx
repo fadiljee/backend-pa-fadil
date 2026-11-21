@@ -16,15 +16,17 @@ export function Announcements() {
       <Confetti variant="white" preset="announcements" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1200px] px-5 md:px-8 lg:px-12">
-        <SectionTitle
-          title={ANNOUNCEMENTS_HEADER.title}
-          subtitle={ANNOUNCEMENTS_HEADER.subtitle}
-        />
+        <Reveal>
+          <SectionTitle
+            title={ANNOUNCEMENTS_HEADER.title}
+            subtitle={ANNOUNCEMENTS_HEADER.subtitle}
+          />
+        </Reveal>
 
         <div className="mx-auto mt-10 max-w-[960px] space-y-5 lg:space-y-7">
           {rows.map((item, idx) => (
-            <Reveal key={item.slug} delayMs={idx * 80}>
-              <article className="flex flex-col gap-4 rounded-[14px] bg-surface px-6 py-5 shadow-[0_6px_18px_rgba(0,0,0,0.08)] transition duration-200 hover:-translate-y-0.5 motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+            <Reveal key={item.slug} delayMs={idx * 85}>
+              <article className="flex flex-col gap-4 rounded-[14px] bg-surface px-6 py-5 shadow-[0_6px_18px_rgba(0,0,0,0.08)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(0,0,0,0.1)] motion-reduce:transition-none sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
                 <h3 className="text-base font-semibold leading-snug text-ink lg:text-[18px]">
                   {item.title}
                 </h3>

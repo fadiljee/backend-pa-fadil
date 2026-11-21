@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Image as ImageIcon, Pause, Play } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import type { HeroSlideData } from "@/lib/content";
 
 interface HeroCarouselProps {
@@ -21,7 +21,6 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
   // Default to middle slide (index 2 = Lapangan with school photo) when 5 slides
   const defaultIndex = total >= 3 ? Math.min(2, total - 1) : 0;
   const [activeIndex, setActiveIndex] = useState(defaultIndex);
-  const [isPaused, setIsPaused] = useState(false);
   const [isHoveredOrFocused, setIsHoveredOrFocused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [announcement, setAnnouncement] = useState("");
@@ -49,9 +48,9 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
     [slides, total]
   );
 
-  // Autoplay every 5s; pauses on hover, focus, hidden tab, manual pause, or reduced motion
+  // Autoplay every 5s; pauses on hover, focus, hidden tab, or reduced motion
   useEffect(() => {
-    if (reducedMotion || isPaused || isHoveredOrFocused || total <= 1) return;
+    if (reducedMotion || isHoveredOrFocused || total <= 1) return;
 
     const timer = setInterval(() => {
       if (document.hidden) return;
@@ -59,7 +58,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [reducedMotion, isPaused, isHoveredOrFocused, total]);
+  }, [reducedMotion, isHoveredOrFocused, total]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
     if (e.key === "ArrowLeft") {
@@ -113,7 +112,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
         onPointerCancel={() => {
           pointerStartX.current = null;
         }}
-        className="relative mx-auto flex h-[240px] w-full max-w-[1440px] items-center justify-center select-none sm:h-[320px] lg:h-[400px]"
+        className="motion-hero-enter relative mx-auto flex h-[240px] w-full max-w-[1440px] items-center justify-center select-none sm:h-[320px] lg:h-[400px]"
         style={{ touchAction: "pan-y" }}
       >
         {slides.map((slide, idx) => {
@@ -154,7 +153,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
                   goToSlide(idx);
                 }
               }}
-              className={`absolute h-[210px] w-[82%] overflow-hidden rounded-[18px] transition-[transform,opacity] duration-500 ease-out will-change-transform motion-reduce:transition-none sm:h-[270px] sm:w-[60%] lg:h-[310px] lg:w-[460px] ${positionClass}`}
+              className={`absolute h-[210px] w-[82%] overflow-hidden rounded-[18px] transition-[transform,opacity] duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform motion-reduce:transition-none sm:h-[270px] sm:w-[60%] lg:h-[310px] lg:w-[460px] ${positionClass}`}
             >
               {slide.imageUrl ? (
                 <img
@@ -186,7 +185,11 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
               )}
 
               {/* Readable gradient + title & description at bottom-left matching reference */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-5 pb-4 pt-14 text-left text-white sm:px-6 sm:pb-5">
+              <div
+                className={`pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent px-5 pb-4 pt-14 text-left text-white transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none sm:px-6 sm:pb-5 ${
+                  isCenter ? "translate-y-0 opacity-100" : "translate-y-1.5 opacity-85"
+                }`}
+              >
                 <p className="text-lg font-semibold leading-tight sm:text-xl lg:text-2xl">
                   {slide.title}
                 </p>
@@ -204,50 +207,35 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
         {announcement}
       </p>
 
-      {/* Pagination Dots + Pause/Play Toggle */}
-      <div className="mt-3 flex items-center justify-center gap-2 sm:mt-4">
-        <nav
-          aria-label="Pilih slide sorotan"
-          className="flex items-center justify-center gap-1"
-        >
-          {slides.map((slide, idx) => {
-            const isCurrent = idx === activeIndex;
-            return (
-              <button
-                key={slide.id}
-                type="button"
-                onClick={() => goToSlide(idx)}
-                aria-label={`Slide ${idx + 1} dari ${total}: ${slide.title}`}
-                aria-current={isCurrent ? "true" : undefined}
-                className="inline-flex h-11 min-w-[28px] items-center justify-center rounded-full px-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
-                style={{ touchAction: "manipulation" }}
-              >
-                <span
-                  aria-hidden="true"
-                  className={`block h-2.5 rounded-full transition-[width,background-color] duration-300 motion-reduce:transition-none ${
-                    isCurrent
-                      ? "w-6 bg-brand"
-                      : "w-2.5 bg-slate-300 hover:bg-slate-400"
-                  }`}
-                />
-              </button>
-            );
-          })}
-        </nav>
-
-        <button
-          type="button"
-          onClick={() => setIsPaused((p) => !p)}
-          aria-label={isPaused ? "Lanjutkan putar otomatis" : "Jeda putar otomatis"}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-muted transition hover:border-brand hover:text-brand focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
-        >
-          {isPaused ? (
-            <Play className="h-3.5 w-3.5" aria-hidden="true" />
-          ) : (
-            <Pause className="h-3.5 w-3.5" aria-hidden="true" />
-          )}
-        </button>
-      </div>
+      {/* Pagination Dots */}
+      <nav
+        aria-label="Pilih slide sorotan"
+        className="mt-3 flex items-center justify-center gap-1 sm:mt-4"
+      >
+        {slides.map((slide, idx) => {
+          const isCurrent = idx === activeIndex;
+          return (
+            <button
+              key={slide.id}
+              type="button"
+              onClick={() => goToSlide(idx)}
+              aria-label={`Slide ${idx + 1} dari ${total}: ${slide.title}`}
+              aria-current={isCurrent ? "true" : undefined}
+              className="inline-flex h-11 min-w-[28px] items-center justify-center rounded-full px-1 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
+              style={{ touchAction: "manipulation" }}
+            >
+              <span
+                aria-hidden="true"
+                className={`block h-2.5 rounded-full transition-[width,background-color] duration-300 motion-reduce:transition-none ${
+                  isCurrent
+                    ? "w-6 bg-brand"
+                    : "w-2.5 bg-slate-300 hover:bg-slate-400"
+                }`}
+              />
+            </button>
+          );
+        })}
+      </nav>
     </section>
   );
 }
