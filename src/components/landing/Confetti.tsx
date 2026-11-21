@@ -355,9 +355,14 @@ export function Confetti({ variant, preset }: ConfettiProps) {
       {shapes.map((shape) => (
         <span
           key={shape.id}
+          style={
+            shape.floatDuration
+              ? { animationDuration: shape.floatDuration }
+              : undefined
+          }
           className={`absolute ${shape.pos} ${shape.size} ${shape.colorClass} ${
             shape.visibility ?? ""
-          }`}
+          } ${shape.floatDuration ? "motion-float" : ""}`}
         >
           {renderShape(shape.kind)}
         </span>

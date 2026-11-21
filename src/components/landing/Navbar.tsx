@@ -122,16 +122,24 @@ export function Navbar({ schoolName = SITE_INFO.schoolName }: NavbarProps) {
 
   return (
     <header
-      className={`sticky top-0 z-50 h-[72px] w-full border-b border-line bg-surface transition-shadow ${
+      className={`sticky top-0 z-50 h-[72px] w-full border-b border-line bg-surface transition-shadow duration-300 ${
         scrolled ? "shadow-sm" : ""
       }`}
     >
+      {/* Pure CSS scroll-driven progress bar (hidden automatically when unsupported or reduced motion) */}
+      <div
+        aria-hidden="true"
+        className="scroll-progress-bar pointer-events-none absolute inset-x-0 bottom-0 hidden h-[2.5px] bg-brand"
+      />
       <div className="mx-auto flex h-full w-full max-w-[1200px] items-center justify-between gap-4 px-5 md:px-8 lg:px-12">
         {/* Desktop Left: Search trigger / inline search */}
-        <div className="hidden min-w-[140px] items-center lg:flex">
+        <div className="hidden min-w-[180px] items-center lg:flex">
           {searchOpen ? (
-            <form onSubmit={handleSearchSubmit} className="flex items-center gap-1.5">
-              <Search className="h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
+            <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+              <Search
+                className="pointer-events-none absolute left-3.5 h-4 w-4 shrink-0 text-brand"
+                aria-hidden="true"
+              />
               <input
                 ref={searchInputRef}
                 type="search"
@@ -142,17 +150,29 @@ export function Navbar({ schoolName = SITE_INFO.schoolName }: NavbarProps) {
                 }}
                 placeholder={SITE_INFO.searchPlaceholder}
                 aria-label={SITE_INFO.searchPlaceholder}
-                className="h-9 w-40 rounded-full border border-line bg-surface-soft px-3 text-sm text-ink placeholder:text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                className="h-10 w-48 rounded-full border border-brand/60 bg-surface pl-10 pr-8 text-sm text-ink shadow-xs placeholder:text-muted focus:border-brand focus:outline-none focus:ring-4 focus:ring-brand/15"
               />
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchOpen(false);
+                }}
+                aria-label="Tutup pencarian"
+                className="absolute right-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-muted transition hover:bg-brand-light hover:text-brand"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
             </form>
           ) : (
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="inline-flex min-h-[44px] items-center gap-2 text-sm font-medium text-muted transition-colors hover:text-brand focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-300 bg-surface-soft px-4 text-sm font-medium text-ink shadow-2xs transition hover:border-brand hover:bg-brand-light hover:text-brand focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
             >
-              <Search className="h-4 w-4" aria-hidden="true" />
-              <span>Search</span>
+              <Search className="h-4 w-4 text-brand" aria-hidden="true" />
+              <span>Cari</span>
             </button>
           )}
         </div>
@@ -190,7 +210,7 @@ export function Navbar({ schoolName = SITE_INFO.schoolName }: NavbarProps) {
         </nav>
 
         {/* Desktop Right: Balancing spacer (admin login hanya via URL /login atau /admin) */}
-        <div className="hidden min-w-[140px] lg:flex" aria-hidden="true" />
+        <div className="hidden min-w-[180px] lg:flex" aria-hidden="true" />
 
         {/* Mobile Right: Hamburger */}
         <button
