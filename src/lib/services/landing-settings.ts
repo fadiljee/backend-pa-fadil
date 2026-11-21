@@ -2,6 +2,14 @@ import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
 
+export const galleryItemSchema = z.object({
+  id: z.string().min(1),
+  judul: z.string().trim().min(2, "Judul foto minimal 2 karakter").max(120),
+  gambar: z.string().min(1),
+});
+
+export type LandingGalleryItem = z.infer<typeof galleryItemSchema>;
+
 export const landingSettingsSchema = z.object({
   schoolName: z.string().trim().min(2, "Nama sekolah minimal 2 karakter").max(80),
   schoolSubtitle: z.string().trim().min(2, "Subjudul sekolah minimal 2 karakter").max(80),
@@ -10,12 +18,11 @@ export const landingSettingsSchema = z.object({
   heroPrimaryCta: z.string().trim().min(2, "Teks tombol utama minimal 2 karakter").max(40),
   heroSecondaryCta: z.string().trim().min(2, "Teks tombol sekunder minimal 2 karakter").max(40),
   showStats: z.boolean(),
-  coursesEyebrow: z.string().trim().min(2, "Label section materi minimal 2 karakter").max(40),
-  coursesTitle: z.string().trim().min(4, "Judul section materi minimal 4 karakter").max(120),
   aboutEyebrow: z.string().trim().min(2, "Label section tentang minimal 2 karakter").max(40),
   aboutTitle: z.string().trim().min(4, "Judul section tentang minimal 4 karakter").max(120),
   aboutParagraph1: z.string().trim().min(10, "Paragraf 1 minimal 10 karakter").max(500),
   aboutParagraph2: z.string().trim().min(10, "Paragraf 2 minimal 10 karakter").max(500),
+  aboutPhoto: z.string().trim().default(""),
   aboutShowStudentCount: z.boolean(),
   aboutHighlights: z
     .array(z.string().trim().min(2, "Poin keunggulan minimal 2 karakter").max(60))
@@ -29,6 +36,7 @@ export const landingSettingsSchema = z.object({
   galleryEyebrow: z.string().trim().min(2, "Label section galeri minimal 2 karakter").max(40),
   galleryTitle: z.string().trim().min(4, "Judul section galeri minimal 4 karakter").max(120),
   galleryTagline: z.string().trim().max(100),
+  galleryItems: z.array(galleryItemSchema).max(16).default([]),
   footerDescription: z.string().trim().min(10, "Deskripsi footer minimal 10 karakter").max(260),
   contactAddress: z.string().trim().max(200),
   contactEmail: z
@@ -48,18 +56,17 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
   schoolSubtitle: "Profil Sekolah",
   heroTitle: "SMPN 1 Merawang, Membentuk Generasi Berkarakter dan Berprestasi.",
   heroDescription:
-    "Website profil resmi SMPN 1 Merawang. Kenali profil sekolah, visi dan misi, berita kegiatan terbaru, serta akses materi pembelajaran siswa.",
+    "Website profil resmi SMPN 1 Merawang. Kenali profil sekolah, visi dan misi, galeri dokumentasi, serta berita kegiatan terbaru sekolah.",
   heroPrimaryCta: "Profil Sekolah",
   heroSecondaryCta: "Berita Kegiatan",
   showStats: true,
-  coursesEyebrow: "Materi Pembelajaran",
-  coursesTitle: "Bahan Ajar SMPN 1 Merawang.",
   aboutEyebrow: "Profil Sekolah",
   aboutTitle: "Mengenal SMPN 1 Merawang.",
   aboutParagraph1:
     "SMPN 1 Merawang merupakan sekolah menengah pertama negeri di Kecamatan Merawang, Kabupaten Bangka, yang berkomitmen menyelenggarakan pendidikan berkualitas dengan lingkungan belajar yang tertib, aman, dan ramah bagi seluruh peserta didik.",
   aboutParagraph2:
     "Bersama tenaga pendidik yang berdedikasi, sekolah mengembangkan keseimbangan antara capaian akademik, pembinaan karakter, dan kegiatan kesiswaan agar siswa siap melanjutkan ke jenjang pendidikan berikutnya.",
+  aboutPhoto: "",
   aboutShowStudentCount: true,
   aboutHighlights: [
     "Lingkungan Belajar Aktif",
@@ -76,10 +83,11 @@ export const DEFAULT_LANDING_SETTINGS: LandingSettings = {
     "Membangun kerja sama yang harmonis antara sekolah, orang tua, dan masyarakat Kecamatan Merawang.",
   ],
   galleryEyebrow: "Galeri Sekolah",
-  galleryTitle: "Dokumentasi Kegiatan dan Pembelajaran.",
+  galleryTitle: "Dokumentasi Kegiatan Sekolah.",
   galleryTagline: "Belajar | Berkarya | Berprestasi",
+  galleryItems: [],
   footerDescription:
-    "Portal profil resmi SMPN 1 Merawang, memuat informasi sekolah, berita kegiatan, serta materi pembelajaran siswa.",
+    "Website profil resmi SMPN 1 Merawang, Kecamatan Merawang, Kabupaten Bangka. Membentuk generasi berkarakter, disiplin, dan berprestasi.",
   contactAddress: "Kecamatan Merawang, Kabupaten Bangka, Kepulauan Bangka Belitung",
   contactEmail: "",
   contactPhone: "",

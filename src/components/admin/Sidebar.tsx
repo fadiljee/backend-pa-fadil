@@ -252,12 +252,17 @@ export function AdminShell({
   return (
     <TooltipProvider delay={150}>
       <SidebarProvider open={effectiveOpen} onOpenChange={handleOpenChange}>
-        <a
-          href="#admin-main"
+        <button
+          type="button"
+          onClick={() => {
+            const el = document.getElementById("admin-main");
+            el?.focus();
+            el?.scrollIntoView({ behavior: "smooth" });
+          }}
           className="sr-only focus:not-sr-only fixed left-3 top-3 z-50 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md"
         >
           Lewati ke konten utama
-        </a>
+        </button>
 
         <AdminSidebarInner
           adminName={adminName}

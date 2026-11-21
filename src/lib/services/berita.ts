@@ -79,3 +79,31 @@ export const getPublishedBeritaList = unstable_cache(
   ["landing-berita"],
   { revalidate: 60, tags: ["landing-berita"] }
 );
+
+export const getPublishedBeritaById = unstable_cache(
+  async (id: number): Promise<BeritaRow | null> => {
+    if (!isSupabaseConfigured() || !Number.isInteger(id) || id <= 0) {
+      return null;
+    }
+
+    try {
+      const supabase = getSupabaseAdmin();
+      const { data, error } = await supabase
+        .from("berita_sekolah")
+        .select("*")
+        .eq("id", id)
+        .eq("published", true)
+        .maybeSingle();
+
+      if (error || !data) {
+        return null;
+      }
+
+      return data as BeritaRow;
+    } catch {
+      return null;
+    }
+  },
+  ["landing-berita-detail"],
+  { revalidate: 60, tags: ["landing-berita"] }
+);

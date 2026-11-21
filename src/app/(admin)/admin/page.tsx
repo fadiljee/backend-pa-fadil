@@ -1,13 +1,22 @@
+import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { MateriRow } from "@/lib/supabase/types";
 import { computeGelar } from "@/lib/services/learning";
 import { getAggregatedLeaderboard } from "@/lib/services/leaderboard";
 import { getDashboardAnalytics } from "@/lib/services/dashboard-analytics";
-import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, BookOpen, HelpCircle, Trophy } from "lucide-react";
+
+const DashboardCharts = dynamicImport(
+  () => import("@/components/admin/DashboardCharts").then((m) => m.DashboardCharts),
+  {
+    loading: () => (
+      <div className="h-[340px] w-full animate-pulse rounded-xl border border-slate-200 bg-slate-100" />
+    ),
+  }
+);
 
 export const dynamic = "force-dynamic";
 

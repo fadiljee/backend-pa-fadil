@@ -22,11 +22,13 @@ const initialState: LandingFormState = {};
 interface LandingSettingsFormProps {
   initialSettings: LandingSettings;
   persisted: boolean;
+  aboutPhotoUrl: string | null;
 }
 
 export function LandingSettingsForm({
   initialSettings,
   persisted,
+  aboutPhotoUrl,
 }: LandingSettingsFormProps) {
   const [state, formAction, isPending] = useActionState(
     updateLandingSettingsAction,
@@ -278,42 +280,10 @@ export function LandingSettingsForm({
       <Card className="border-slate-200">
         <CardHeader>
           <CardTitle className="text-base font-semibold text-slate-900">
-            3. Bagian Materi &amp; Galeri
+            3. Bagian Galeri
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="coursesEyebrow" className="text-sm font-semibold text-slate-800">
-                Label Section Materi
-              </Label>
-              <Input
-                id="coursesEyebrow"
-                name="coursesEyebrow"
-                required
-                minLength={2}
-                maxLength={40}
-                defaultValue={initialSettings.coursesEyebrow}
-                className="validated-field min-h-11"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="coursesTitle" className="text-sm font-semibold text-slate-800">
-                Judul Section Materi
-              </Label>
-              <Input
-                id="coursesTitle"
-                name="coursesTitle"
-                required
-                minLength={4}
-                maxLength={120}
-                defaultValue={initialSettings.coursesTitle}
-                className="validated-field min-h-11"
-              />
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="space-y-1.5">
               <Label htmlFor="galleryEyebrow" className="text-sm font-semibold text-slate-800">
@@ -359,11 +329,17 @@ export function LandingSettingsForm({
             </div>
           </div>
           <p className="text-xs text-slate-500">
-            Catatan: Daftar kartu materi dan foto galeri diambil otomatis dari menu{" "}
-            <Link href="/admin/materi" className="font-semibold text-primary hover:underline">
-              Materi
-            </Link>
-            .
+            Catatan: Foto-foto Galeri Sekolah dikelola secara terpisah pada bagian{" "}
+            <button
+              type="button"
+              onClick={() =>
+                document.getElementById("kelola-galeri")?.scrollIntoView({ behavior: "smooth" })
+              }
+              className="font-semibold text-primary hover:underline"
+            >
+              Kelola Foto Galeri Sekolah
+            </button>{" "}
+            di bawah halaman ini (tidak diambil dari Berita maupun Profil Sekolah).
           </p>
         </CardContent>
       </Card>
@@ -437,6 +413,40 @@ export function LandingSettingsForm({
               defaultValue={initialSettings.aboutParagraph2}
               className="validated-field"
             />
+          </div>
+
+          <div className="space-y-2 rounded-xl border border-slate-200/80 bg-slate-50/70 p-4">
+            <Label htmlFor="aboutPhotoFile" className="text-sm font-semibold text-slate-800">
+              Foto Profil Sekolah (Khusus Bagian Profil Sekolah)
+            </Label>
+            {aboutPhotoUrl && (
+              <div className="flex flex-wrap items-center gap-4 pt-1">
+                <img
+                  src={aboutPhotoUrl}
+                  alt="Foto profil sekolah saat ini"
+                  className="h-24 w-32 rounded-lg border border-slate-200 object-cover"
+                />
+                <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-red-700">
+                  <input
+                    type="checkbox"
+                    name="hapusAboutPhoto"
+                    className="h-4 w-4 rounded border-slate-300 text-red-600"
+                  />
+                  <span>Hapus foto profil saat ini</span>
+                </label>
+              </div>
+            )}
+            <Input
+              id="aboutPhotoFile"
+              name="aboutPhotoFile"
+              type="file"
+              accept="image/jpeg,image/png"
+              className="min-h-11 bg-white file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700"
+            />
+            <p className="text-xs text-slate-500">
+              Unggah foto khusus untuk bagian Profil Sekolah (JPG/PNG). Jika kosong, bagian Profil
+              Sekolah akan menampilkan kartu identitas sekolah.
+            </p>
           </div>
 
           <label className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-sm font-medium text-slate-800">
