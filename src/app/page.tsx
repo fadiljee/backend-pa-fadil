@@ -1,207 +1,142 @@
-import { unstable_cache } from "next/cache";
-import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase/server";
-import { MateriRow } from "@/lib/supabase/types";
 import { getGambarUrl } from "@/lib/storage";
 import { getLandingSettings } from "@/lib/services/landing-settings";
 import { getPublishedBeritaList } from "@/lib/services/berita";
+import {
+  DEFAULT_STATS,
+  FALLBACK_NEWS,
+  HERO_SLIDES_CONTENT,
+  MOSAIC_DEFAULT_ALTS,
+  type HeroSlideData,
+  type LandingNewsItem,
+  type MosaicSlotData,
+} from "@/lib/content";
 import { Navbar } from "@/components/landing/Navbar";
-import { Hero } from "@/components/landing/Hero";
-import { About } from "@/components/landing/About";
-import { Courses } from "@/components/landing/Courses";
-import { HighlightsBand } from "@/components/landing/HighlightsBand";
-import { Gallery } from "@/components/landing/Gallery";
-import { NewsSection } from "@/components/landing/NewsSection";
-import { LocationMap } from "@/components/landing/LocationMap";
+import { HeroCarousel } from "@/components/landing/HeroCarousel";
+import { Welcome } from "@/components/landing/Welcome";
+import { Stats } from "@/components/landing/Stats";
+import { Mosaic } from "@/components/landing/Mosaic";
+import { News } from "@/components/landing/News";
+import { CalendarBanner } from "@/components/landing/CalendarBanner";
+import { Announcements } from "@/components/landing/Announcements";
 import { Footer } from "@/components/landing/Footer";
-import { FloatingBar } from "@/components/landing/FloatingBar";
 import { SectionButton } from "@/components/landing/SectionLink";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
-interface LandingData {
-  connected: boolean;
-  siswaCount: number;
-  materiCount: number;
-  materiList: MateriRow[];
+function formatIndoDate(dateStr: string): string {
+  const parsed = new Date(`${dateStr}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return dateStr;
+  }
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(parsed);
 }
 
-const getLandingData = unstable_cache(
-  async (): Promise<LandingData> => {
-    if (!isSupabaseConfigured()) {
-      return {
-        connected: false,
-        siswaCount: 0,
-        materiCount: 0,
-        materiList: [],
-      };
-    }
-
-    try {
-      const supabase = getSupabaseAdmin();
-      const [siswaRes, materiRes, materiListRes] = await Promise.all([
-        supabase.from("data_siswa").select("*", { count: "exact", head: true }),
-        supabase.from("materis").select("*", { count: "exact", head: true }),
-        supabase.from("materis").select("*").order("id", { ascending: true }).limit(9),
-      ]);
-
-      return {
-        connected: true,
-        siswaCount: siswaRes.count ?? 0,
-        materiCount: materiRes.count ?? 0,
-        materiList: (materiListRes.data ?? []) as MateriRow[],
-      };
-    } catch {
-      return {
-        connected: false,
-        siswaCount: 0,
-        materiCount: 0,
-        materiList: [],
-      };
-    }
-  },
-  ["landing-data"],
-  { revalidate: 60, tags: ["landing-data"] }
-);
-
 export default async function HomePage() {
-  const [data, { settings }, beritaRes] = await Promise.all([
-    getLandingData(),
+  const [{ settings }, beritaRes] = await Promise.all([
     getLandingSettings(),
-    getPublishedBeritaList(4),
+    getPublishedBeritaList(3),
   ]);
 
-  const newsItems = beritaRes.items.map((b) => ({
-    id: b.id,
-    judul: b.judul,
-    ringkasan: b.ringkasan,
-    konten: b.konten,
-    kategori: b.kategori,
-    tanggal_kegiatan: b.tanggal_kegiatan,
-    gambarUrl: getGambarUrl(b.gambar),
-  }));
-
-  const courseItems = data.materiList.map((m) => ({
-    id: m.id,
-    judul: m.judul,
-    konten: m.konten,
-    gambarUrl: getGambarUrl(m.gambar),
-  }));
-
-  const newsGalleryItems = newsItems
-    .filter((item): item is typeof item & { gambarUrl: string } => Boolean(item.gambarUrl))
-    .map((item) => ({
-      id: 100000 + item.id,
-      judul: item.judul,
-      url: item.gambarUrl,
-    }));
-
-  const materiGalleryItems = courseItems
-    .filter((item): item is typeof item & { gambarUrl: string } => Boolean(item.gambarUrl))
+  // Dedicated Gallery items (strictly separated from Berita)
+  const uploadedGallery = settings.galleryItems
     .map((item) => ({
       id: item.id,
-      judul: item.judul,
-      url: item.gambarUrl,
-    }));
+      alt: item.judul,
+      imageUrl: getGambarUrl(item.gambar),
+    }))
+    .filter((item): item is MosaicSlotData => Boolean(item.imageUrl));
 
-  const galleryItems = [...newsGalleryItems, ...materiGalleryItems].slice(0, 8);
-  const featuredPhotoUrl = galleryItems[0]?.url ?? null;
+  // Build 8 mosaic slots (uploaded gallery photos first, then clean placeholders)
+  const mosaicSlots: MosaicSlotData[] = Array.from({ length: 8 }, (_, idx) => {
+    const uploaded = uploadedGallery[idx];
+    if (uploaded) return uploaded;
+    return {
+      id: `mosaic-slot-${idx + 1}`,
+      alt: MOSAIC_DEFAULT_ALTS[idx] ?? `Kegiatan SMPN 1 Merawang ${idx + 1}`,
+      imageUrl: null,
+    };
+  });
+
+  // Hero Coverflow Slides (5 school highlights)
+  const aboutPhotoUrl = getGambarUrl(settings.aboutPhoto);
+  const heroSlides: HeroSlideData[] = HERO_SLIDES_CONTENT.map((slide, idx) => {
+    if (slide.imageUrl) return slide;
+    if (idx === 0 && aboutPhotoUrl) {
+      return { ...slide, imageUrl: aboutPhotoUrl };
+    }
+    const galleryCandidate = uploadedGallery[idx];
+    if (galleryCandidate?.imageUrl) {
+      return { ...slide, imageUrl: galleryCandidate.imageUrl };
+    }
+    return slide;
+  });
+
+  // News items (published berita linking to full-page /berita/[id], fallback to general school news)
+  const newsItems: LandingNewsItem[] =
+    beritaRes.items.length > 0
+      ? beritaRes.items.map((b) => ({
+          id: b.id,
+          href: `/berita/${b.id}`,
+          title: b.judul,
+          excerpt: b.ringkasan,
+          dateLabel: formatIndoDate(b.tanggal_kegiatan),
+          dateIso: b.tanggal_kegiatan,
+          imageUrl: getGambarUrl(b.gambar),
+        }))
+      : FALLBACK_NEWS;
 
   return (
-    <div className="min-h-dvh w-full bg-white text-body">
+    <div className="min-h-dvh w-full bg-surface text-body">
       <SectionButton
         targetId="main-content"
-        className="sr-only focus:not-sr-only fixed left-3 top-3 z-50 rounded-md bg-crimson px-4 py-2 text-sm font-semibold text-white shadow-md"
+        className="sr-only focus:not-sr-only fixed left-3 top-3 z-50 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white shadow-md"
       >
         Lewati ke konten utama
       </SectionButton>
 
-      <Navbar
+      {/* 1. Navbar */}
+      <Navbar schoolName={settings.schoolName} />
+
+      <main id="main-content" tabIndex={-1}>
+        {/* 2. Hero Carousel Foto */}
+        <HeroCarousel slides={heroSlides} />
+
+        {/* 3. Welcome / Profil Umum Sekolah */}
+        <Welcome />
+
+        {/* 4. Statistik Sekolah */}
+        <Stats items={DEFAULT_STATS} />
+
+        {/* 5. Mosaik Galeri Foto Sekolah */}
+        <div className="below-fold-section">
+          <Mosaic slots={mosaicSlots} />
+        </div>
+
+        {/* 6. Berita & Kegiatan Sekolah */}
+        <div className="below-fold-section">
+          <News items={newsItems} />
+        </div>
+
+        {/* 7. Banner Kalender Akademik */}
+        <CalendarBanner />
+
+        {/* 8. Pengumuman Sekolah */}
+        <div className="below-fold-section">
+          <Announcements />
+        </div>
+      </main>
+
+      {/* 9. Footer Sekolah */}
+      <Footer
         schoolName={settings.schoolName}
-        schoolSubtitle={settings.schoolSubtitle}
         contactAddress={settings.contactAddress}
         contactEmail={settings.contactEmail}
         contactPhone={settings.contactPhone}
       />
-
-      <main id="main-content" tabIndex={-1}>
-        <Hero
-          schoolName={settings.schoolName}
-          title={settings.heroTitle}
-          description={settings.heroDescription}
-          primaryCta={settings.heroPrimaryCta}
-          secondaryCta={settings.heroSecondaryCta}
-          highlights={settings.aboutHighlights}
-          heroPhotoUrl={featuredPhotoUrl}
-        />
-
-        <div className="below-fold-section">
-          <About
-            siswaCount={data.siswaCount}
-            materiCount={data.materiCount}
-            beritaCount={newsItems.length}
-            connected={data.connected}
-            eyebrow={settings.aboutEyebrow}
-            title={settings.aboutTitle}
-            paragraph1={settings.aboutParagraph1}
-            paragraph2={settings.aboutParagraph2}
-            showStudentCount={settings.aboutShowStudentCount}
-            featuredPhotoUrl={featuredPhotoUrl}
-            schoolName={settings.schoolName}
-          />
-        </div>
-
-        <div className="below-fold-section">
-          <Courses
-            materiList={courseItems}
-            connected={data.connected}
-            eyebrow={settings.coursesEyebrow}
-            title={settings.coursesTitle}
-          />
-        </div>
-
-        <div className="below-fold-section">
-          <HighlightsBand />
-        </div>
-
-        <div className="below-fold-section">
-          <Gallery
-            items={galleryItems}
-            eyebrow={settings.galleryEyebrow}
-            title={settings.galleryTitle}
-            tagline={settings.galleryTagline}
-          />
-        </div>
-
-        <div className="below-fold-section">
-          <NewsSection
-            items={newsItems}
-            schoolName={settings.schoolName}
-            contactAddress={settings.contactAddress}
-            schoolVision={settings.schoolVision}
-            schoolMissions={settings.schoolMissions}
-          />
-        </div>
-
-        <div className="below-fold-section">
-          <LocationMap
-            schoolName={settings.schoolName}
-            contactAddress={settings.contactAddress}
-          />
-        </div>
-      </main>
-
-      <div className="below-fold-section">
-        <Footer
-          schoolName={settings.schoolName}
-          schoolSubtitle={settings.schoolSubtitle}
-          description={settings.footerDescription}
-          contactAddress={settings.contactAddress}
-          contactEmail={settings.contactEmail}
-          contactPhone={settings.contactPhone}
-          copyrightText={settings.copyrightText}
-        />
-      </div>
-      <FloatingBar />
     </div>
   );
 }

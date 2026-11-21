@@ -25,11 +25,16 @@ export function getSupabaseAdmin(): SupabaseClient {
       persistSession: false,
       autoRefreshToken: false,
     },
+    global: {
+      fetch: (url, options = {}) =>
+        fetch(url, {
+          ...options,
+          signal: options.signal ?? AbortSignal.timeout(4500),
+        }),
+    },
   });
 
-  if (env.NODE_ENV !== "production") {
-    globalForSupabase.supabaseAdmin = client;
-  }
+  globalForSupabase.supabaseAdmin = client;
 
   return client;
 }

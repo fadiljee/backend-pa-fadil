@@ -59,7 +59,11 @@ export function getGambarUrl(
   originOverride?: string
 ): string | null {
   if (!key) return null;
-  if (key.startsWith("http://") || key.startsWith("https://")) {
+  if (
+    key.startsWith("http://") ||
+    key.startsWith("https://") ||
+    key.startsWith("/images/")
+  ) {
     return key;
   }
 
@@ -108,7 +112,12 @@ export async function uploadImageFile(
 }
 
 export async function deleteImageFile(key: string | null | undefined): Promise<void> {
-  if (!key || key.startsWith("http://") || key.startsWith("https://")) {
+  if (
+    !key ||
+    key.startsWith("http://") ||
+    key.startsWith("https://") ||
+    key.startsWith("/images/")
+  ) {
     return;
   }
 

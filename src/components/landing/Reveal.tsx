@@ -4,9 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 export function Reveal({
   children,
+  delayMs = 0,
   className = "",
 }: {
   children: React.ReactNode;
+  delayMs?: number;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -39,8 +41,9 @@ export function Reveal({
   return (
     <div
       ref={ref}
-      className={`transition duration-500 ease-out ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+      style={delayMs > 0 ? { transitionDelay: `${delayMs}ms` } : undefined}
+      className={`transition-[transform,opacity] duration-400 ease-out motion-reduce:transition-none ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
       } ${className}`}
     >
       {children}
